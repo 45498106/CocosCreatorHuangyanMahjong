@@ -1,0 +1,56 @@
+{
+  "ver": "1.2.4",
+  "uuid": "26dec139-13c9-412f-a44c-3ddb60ad12bc",
+  "rawTextureUuid": "4cab1628-71d2-40d3-a834-2a372d7bb8ef",
+  "size": {
+    "width": 851,
+    "height": 55
+  },
+  "type": "Texture Packer",
+  "subMetas": {
+    "dikuang5_6.png": {
+      "ver": "1.0.3",
+      "uuid": "fb038251-f465-42ea-a100-9c615d611bf2",
+      "rawTextureUuid": "4cab1628-71d2-40d3-a834-2a372d7bb8ef",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 2,
+      "trimY": 6,
+      "width": 69,
+      "height": 47,
+      "rawWidth": 71,
+      "rawHeight": 49,
+      "borderTop": 12,
+      "borderBottom": 10,
+      "borderLeft": 10,
+      "borderRight": 10,
+      "spriteType": "normal",
+      "subMetas": {}
+    },
+    "zj_hengxian.png": {
+      "ver": "1.0.3",
+      "uuid": "45f7dfc3-0321-4d67-a56e-8e351a70575e",
+      "rawTextureUuid": "4cab1628-71d2-40d3-a834-2a372d7bb8ef",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 2,
+      "trimY": 2,
+      "width": 847,
+      "height": 2,
+      "rawWidth": 849,
+      "rawHeight": 4,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "spriteType": "normal",
+      "subMetas": {}
+    }
+  }
+}

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>frames</key>
+        <dict>
+            <key>dikuang5_5.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,2},{71,45}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{1,1},{71,45}}</string>
+                <key>sourceSize</key>
+                <string>{73,47}</string>
+            </dict>
+        </dict>
+        <key>metadata</key>
+        <dict>
+            <key>format</key>
+            <integer>2</integer>
+            <key>realTextureFileName</key>
+            <string>news.png</string>
+            <key>size</key>
+            <string>{75,49}</string>
+            <key>smartupdate</key>
+            <string>$TexturePacker:SmartUpdate:d04b4359990962916727f6426dba60fa:f50512f6f3aac5706f99ab4132c90410:4c6964ea6f8bd9e50652b42a7c57962c$</string>
+            <key>textureFileName</key>
+            <string>news.png</string>
+        </dict>
+    </dict>
+</plist>

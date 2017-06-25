@@ -1,0 +1,34 @@
+{
+  "ver": "1.2.4",
+  "uuid": "dc9565af-9b42-4881-8a1d-60dc65b28ad4",
+  "rawTextureUuid": "34d1dbe5-acd8-4853-9456-2fbeb2012d43",
+  "size": {
+    "width": 75,
+    "height": 49
+  },
+  "type": "Texture Packer",
+  "subMetas": {
+    "dikuang5_5.png": {
+      "ver": "1.0.3",
+      "uuid": "6018dfea-e7c8-4f9a-8361-329cd98c5b5d",
+      "rawTextureUuid": "34d1dbe5-acd8-4853-9456-2fbeb2012d43",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 2,
+      "trimY": 2,
+      "width": 71,
+      "height": 45,
+      "rawWidth": 73,
+      "rawHeight": 47,
+      "borderTop": 11,
+      "borderBottom": 10,
+      "borderLeft": 12,
+      "borderRight": 12,
+      "spriteType": "normal",
+      "subMetas": {}
+    }
+  }
+}

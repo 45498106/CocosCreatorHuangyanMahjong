@@ -12,9 +12,8 @@ var NetMessageMgr = {
     adapterArr    : [],
     delayedTimePer: 200, //200毫秒, 
     delayedTime   : -200, //消息处理延后
-    heartTime     : 50,
+    heartTime     : 30,
     heartBeat     : function() {
-        log(" hti  ")
         NetMessageMgr.send(NetProtocolList.HeartbeatMessageNum.netID, {});
     },
     startHeartBeat : function(){
@@ -159,8 +158,10 @@ var NetMessageMgr = {
     onMessage : function(event){
         var netID = event.data.substr(0, 3);
         if(parseInt(netID) !== 761){
-            log("--------onMessage--")
+            log("---server respone -----onMessage--")
             log(event)
+        }else {
+            log("server hit respone")
         }
         
        

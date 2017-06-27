@@ -72,10 +72,11 @@ cc.Class({
     //设置手上牌图像资源
     setHandPaiSprite : function(paiNode, deskType, paiID, nodeScale){
         var bgFrameName = "pj_shou"+deskType;
-        var bgNode      = paiNode.getChildByName("bg");
+        var mainNode    = paiNode.getChildByName("main")
+        var bgNode      = mainNode.getChildByName("bg");
         var bgRect      = this.setNodeSprite(bgNode, bgFrameName);
         if(deskType === GameDefine.DESKPOS_TYPE.XIA){
-            var contentNode  = paiNode.getChildByName("content");
+            var contentNode  = mainNode.getChildByName("content");
             var contentName  = "pj_"+utils.getLocalPaiID(paiID);
             this.setNodeSprite(contentNode, contentName);
             contentNode.setPosition(cc.p(0, -10))
@@ -106,12 +107,13 @@ cc.Class({
     setPengGangPaiSprite : function(paiNode, deskType, pai, nodeScale){
         var isRotate         = pai.rotate !== 0;
         var paiID            = pai.id;
+        var mainNode         = paiNode.getChildByName("main")
         var DeskTp           = GameDefine.DESKPOS_TYPE;
         var isShangXia       = (deskType === DeskTp.XIA || deskType === DeskTp.SHANG);
         var bgFrameName      = this.getBgFreme(deskType, isShangXia, isRotate);
-        var bgNode           = paiNode.getChildByName("bg");
+        var bgNode           = mainNode.getChildByName("bg");
         var bgRect           = this.setNodeSprite(bgNode, bgFrameName);
-        var contentNode      = paiNode.getChildByName("content");
+        var contentNode      = mainNode.getChildByName("content");
         var contentName      = "pj_"+utils.getLocalPaiID(paiID);
         this.setNodeSprite(contentNode, contentName);
         paiNode.width        = bgRect.width;
@@ -126,9 +128,9 @@ cc.Class({
             contentNode.scale = isRotate ? 0.4 : 0.7
             paiNode.scale     = isRotate ? paiNode.scale * 1.6 : paiNode.scale;
         }else {
-            contentNode.setPosition(cc.p(0, 9));
-            contentNode.scale = isRotate ? 0.7 : 0.4
-            paiNode.scale     = isRotate ? paiNode.scale * 0.7 : paiNode.scale;
+            contentNode.setPosition(cc.p(0, 8));
+            contentNode.scale = isRotate ? 0.6 : 0.4
+            paiNode.scale     = isRotate ? paiNode.scale * 0.66 : paiNode.scale;
         }
     },
     //开始打麻将
@@ -340,6 +342,12 @@ cc.Class({
     //显示结算信息
     showRoundReport : function(reportData, nameList) {
         this.EndUI.getComponent("endUI").showRoundReport(reportData, nameList);
+    },
+
+    //show curent round report data
+    showSingleReport : function(reportData){
+        this.EndUI.getComponent("endUI").setSingleReportData(reportData, this);
+        this.EndUI.getComponent("endUI").showSingleReport();
     },
 
 });

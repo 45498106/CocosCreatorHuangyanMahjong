@@ -7,11 +7,11 @@
             <key>anniu_10.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{547,655},{109,96}}</string>
+                <string>{{100,1115},{109,96}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{1,1},{109,96}}</string>
                 <key>sourceSize</key>
@@ -20,7 +20,7 @@
             <key>anniu_3.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{547,753},{59,59}}</string>
+                <string>{{296,1115},{59,59}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -33,11 +33,11 @@
             <key>anniu_4.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{588,2},{543,228}}</string>
+                <string>{{100,885},{543,228}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{1,1},{543,228}}</string>
                 <key>sourceSize</key>
@@ -46,7 +46,7 @@
             <key>anniu_5.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,655},{543,228}}</string>
+                <string>{{100,655},{543,228}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -59,11 +59,11 @@
             <key>anniu_6.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{588,547},{104,103}}</string>
+                <string>{{100,1226},{104,103}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{1,1},{104,103}}</string>
                 <key>sourceSize</key>
@@ -72,20 +72,7 @@
             <key>anniu_7.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{694,547},{104,96}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{1,1},{104,96}}</string>
-                <key>sourceSize</key>
-                <string>{106,98}</string>
-            </dict>
-            <key>anniu_8.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{658,652},{104,96}}</string>
+                <string>{{205,1221},{104,96}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -95,10 +82,36 @@
                 <key>sourceSize</key>
                 <string>{106,98}</string>
             </dict>
+            <key>anniu_8.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{198,1115},{104,96}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{1,1},{104,96}}</string>
+                <key>sourceSize</key>
+                <string>{106,98}</string>
+            </dict>
+            <key>dikuang_zhujiemian.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,2},{1333,96}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{1,1},{1333,96}}</string>
+                <key>sourceSize</key>
+                <string>{1335,98}</string>
+            </dict>
             <key>meinv.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,2},{651,584}}</string>
+                <string>{{100,2},{651,584}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -116,9 +129,9 @@
             <key>realTextureFileName</key>
             <string>mainLayer.png</string>
             <key>size</key>
-            <string>{818,885}</string>
+            <string>{686,1337}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:b75ddba603fcb96966460503f0f107cf:63aece217c06078a75ddc6d43c66904c:98c864c0c772053f554bf38cf7217fd8$</string>
+            <string>$TexturePacker:SmartUpdate:a5033ee297362cd018453486b6c9b057:57efaec5b709062efc722020765fc3c7:98c864c0c772053f554bf38cf7217fd8$</string>
             <key>textureFileName</key>
             <string>mainLayer.png</string>
         </dict>

@@ -64,10 +64,10 @@ cc.Class({
         isOnlook = this.pangguanTG.getChildByName("toggle").getChildByName("checkmark").active;
         data.isOnlook = isOnlook;
 
-        this.createRoomInfo(data);
+        this.creatGameRoomToServer(data);
     },
 
-    createRoomInfo : function(data){
+    creatGameRoomToServer : function(data){
         var roomInfo = {
                 NoticeType : 2,
                 GameNum : 1,

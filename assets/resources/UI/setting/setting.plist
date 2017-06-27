@@ -95,6 +95,19 @@
                 <key>sourceSize</key>
                 <string>{81,61}</string>
             </dict>
+            <key>dikuang6_2.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{316,2},{79,59}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{1,1},{79,59}}</string>
+                <key>sourceSize</key>
+                <string>{81,61}</string>
+            </dict>
             <key>gou.png</key>
             <dict>
                 <key>frame</key>
@@ -157,7 +170,7 @@
             <key>size</key>
             <string>{770,125}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:2078e342ec43e12fc8fedfb8e232d0eb:75f575dd1a5f30138d1b6a790dc8ad8f:b9c870dc099f34bca3e3b2447514f602$</string>
+            <string>$TexturePacker:SmartUpdate:6a7cc90a0e26538154babc1e617d742f:85541deb2906c63070f5efc2d1dd368f:b9c870dc099f34bca3e3b2447514f602$</string>
             <key>textureFileName</key>
             <string>setting.png</string>
         </dict>

@@ -9,13 +9,13 @@ var playerCls  = function () {
 
 playerCls.prototype.setUserData = function (playerData) {
     this.playerData = playerData;
-    this.udidTag = 0;
     this.playerUI.refreshPlayerData(playerData);
     this.setReadyData(playerData.Status === GameDefine.PLAYER_READY.READY);
 }
 
-playerCls.prototype.setDirectNode = function(directionN){
+playerCls.prototype.setDirectNode = function(directionN, direction){
     this.directionN = directionN;
+    this.direction  = direction;
 }
 
 playerCls.prototype.setIsZhuang = function(isZhuang){
@@ -60,12 +60,14 @@ playerCls.prototype.checkPaiEnd = function() {
 
 
 playerCls.prototype.init = function(playerUI, desPosType, gameUI){
+    this.udidTag    = 0;
     this.playerUI   = playerUI;
     this.desPosType = desPosType;
     this.playerUI.initDeskPosType(desPosType, gameUI, this);
     if(this.desPosType === GameDefine.DESKPOS_TYPE.XIA){
         this.chuPai = this.selfChuPai;
     }
+    this.IsSelfPlayer = (this.desPosType === GameDefine.DESKPOS_TYPE.XIA);
 }
 
 //设置开局发的牌
@@ -83,13 +85,50 @@ playerCls.prototype.setStartPaiData = function(paiData){
     }
 }
 
+playerCls.prototype.testPos = function(){
+    var paiObjLi = [];
+    this.paiDataObj = require("paiObj").new(paiObjLi);
+    var self = this;
+    setTimeout(function(){
+        var gang = [];
+            for(let i = 0; i<2; i++){
+                gang[i] = [];
+                for(let k = 0; k<4; k++){
+                    gang[i].push(self.getPaiObj(13));
+                }
+                
+            }
+            gang[0][0].rotate = -90;
+            gang[1][2].rotate = 90;
+            var peng = [];
+            for(let i = 0; i<2; i++){
+                peng[i] = [];
+                for(let k = 0; k<3; k++){
+                    peng[i].push(self.getPaiObj(11 + i));
+                }
+            }
+            peng[0][0].rotate = -90;
+            peng[1][2].rotate = 90;
+            var shouShangPai = [];
+            for (var i = 0; i < 2; i++) {
+                shouShangPai.push(self.getPaiObj(21 + i));
+            }
+        self.paiDataObj.pengGangPai.gang = gang;
+        self.paiDataObj.pengGangPai.peng = peng;
+        self.paiDataObj.shouShangPai = shouShangPai;
+        self.playerUI.newRoundPaiAnim(self.paiDataObj);
+        self.playerUI.pengGangPaiUI(self.paiDataObj);
+    }, 1000);
+    // this.playerUI.pengGangPaiUI(this.paiDataObj);
+}
+
 playerCls.prototype.getPaiObj = function(id){
     var pai    = {};
-    pai.id     = id;
+    pai.id     = id || 0;
     pai.rotate = 0;
     pai.sortId = utils.isBaiBan(id) ? gameManager.CaiShenPai : id;
     //cai shen pai  put left, so  sortID is 0;
-    pai.sortId = gameManager.CaiShenPai == id ? 0 : pai.sortId;
+    pai.sortId = gameManager.CaiShenPai == id ? -1 : pai.sortId;
     pai.udid   = "pai_" + this.udidTag++;
     return pai;
 }
@@ -142,20 +181,16 @@ playerCls.prototype.setReadyData = function(isReady) {
 // }
 
 //出牌
-playerCls.prototype.chuPai = function(paiID){
-    log("---chuPai---")
+playerCls.prototype.chuPai = function(paiID, paiUdid){
     var pai = this.paiDataObj.otherChupai(paiID);
-    log("--pai-", pai);
     pai.id = paiID;
     this.curDaPai = pai;
     this.paiDataObj.sortMajiang(); 
     this.playerUI.daPai(pai, this.paiDataObj);
 }
 
-playerCls.prototype.selfChuPai = function(paiID) {
-    log("---selfChuPai---")
-    var pai  = this.paiDataObj.chuPai(paiID);
-    log("--pai-", pai);
+playerCls.prototype.selfChuPai = function(paiID, paiUdid) {
+    var pai  = this.paiDataObj.chuPai(paiUdid);
     this.curDaPai    = pai;
     this.isDaAnimEnd = false;
     this.paiDataObj.sortMajiang(); 
@@ -241,10 +276,8 @@ playerCls.prototype.chi = function(chiData, isSelf){
 
 
 playerCls.prototype.turnToDaPai = function(pai){
-    var content = {};
-    content.Atile = pai.id;
     this.setPlayStatus(GameDefine.PLAYERSTATUS.WAITING);
-    gameManager.turnToChupai(content);
+    gameManager.turnToChupai(pai);
 }
 
 

@@ -1,9 +1,14 @@
 var utils = {};
 utils.isDebug = true;
+utils.lastLogTime = 0;
 utils.log = function (argument) {
 	if(!utils.isDebug){return};
 	for(var k in arguments) {
-        cc.log(new Date());
+        var date = new Date();
+        if(date.getTime() - utils.lastLogTime > 1000){
+            utils.lastLogTime  = date.getTime();
+            cc.log(date.getHours() + " 时"+date.getMinutes()+" 分"+date.getSeconds()+" 秒");
+        }
         cc.log(arguments[k]);
     }
 }

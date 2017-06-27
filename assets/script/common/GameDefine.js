@@ -33,7 +33,6 @@ GameDefine.ServerToLocalType = {
 	5 : 4,
 }
 
-
 GameDefine.TeSuPaiID = {
 	41 : 114,//中
 	42 : 64, //發
@@ -100,6 +99,37 @@ GameDefine.GAME_TYPE = {
 		zhuangPaiCount : 14, //庄家牌的数量 
 		totalPai  : 136, //总共好多张牌
 	}
+}
+
+//胡数 localText
+GameDefine.HSTEXT = {
+        dh :"底胡",
+        dz :"对子",
+        yk :"硬刻",
+        rk :"软刻",
+        yak :"硬张暗刻",
+        rak :"软张暗刻",
+        ymg  :"硬张明杠",
+        rmg  :"软张明杠",
+        yag 　:"硬张暗杠",
+        rag 　:"软张暗杠",
+        zm :"自摸",
+        zmqd :"自摸嵌档",
+        ddh :"对对胡",
+        gsh :"杠上花",
+}
+
+GameDefine.FSTEXT = {
+	//翻数，未胡牌/已胡牌翻数
+    zfbk :"中发白刻子",
+    zfbg :"中发白杠",
+    sfk :"本门风刻子",
+    sfg :"本门风杠",
+    //翻数，已胡牌翻数
+    wcs :"无财神",
+    cshy :"财神还原",
+    hys :"混一色",
+    qys :"清",
 }
 
 

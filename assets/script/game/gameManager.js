@@ -46,6 +46,7 @@ GameManager.init = function(){
 	mmgr.addMessageCB(netList.ZiMoHuPaiAckMessageNum.netID, this.ZiMoHuPaiAckMessage, this);
 	mmgr.addMessageCB(netList.MoPaiZuHeReminderNum.netID, this.MoPaiZuHeReminder, this);
 	mmgr.addMessageCB(netList.RestoreListenReminderNum.netID, this.RestoreListenReminder, this);
+	// this.startEnd();
 }
 
 GameManager.onDestroy  = function(){
@@ -110,7 +111,7 @@ GameManager.bindUserDirection = function(){
 		var direction = directionList[dirIndex % 4];
 		var player    = self.playerList[curDeskType];
 		var directN   = self.directionNodeList[direction]
-		player.setDirectNode(directN);
+		player.setDirectNode(directN, direction);
 	}
 	setPlayerDirNode(deskType.XIA, meDirIndex);
 	setPlayerDirNode(deskType.YOU, meDirIndex+1);
@@ -291,8 +292,10 @@ GameManager.setStartPaiData = function(){
 	this.gameUICB.refreResidue(1);
 }
 
+
 //摸牌
 GameManager.MoPaiNotice = function(data){
+	this.gameUICB.refreResidue(1);
 	this.ChuPaiStatus = GameDefine.CHUPAI_STATUS.NEW;
 	var deskType = this.getDeskTypeByPos(data.PlayerIdx)
 	//netID 102 没有推送PlayerIdx数据过来 102是自己摸牌
@@ -301,7 +304,6 @@ GameManager.MoPaiNotice = function(data){
 	}
 	this.turnToNextPlayer(this.playerList[deskType])
 	this.curPlayer.mopai(data.Atile);
-	this.gameUICB.refreResidue(1);
 }
 
 
@@ -322,9 +324,12 @@ GameManager.caiShengPai = function(data){
 }
 
 //玩家出牌
-GameManager.turnToChupai = function(data){
-	this.ChuPaiStatus = GameDefine.CHUPAI_STATUS.START;
-	NetMessageMgr.send(NetProtocolList.ChuPaiMessageNum.netID, data);
+GameManager.turnToChupai = function(pai){
+	var content        = {};
+	content.Atile      = pai.id;
+	this.curChuPaiUdid = pai.udid;
+	this.ChuPaiStatus  = GameDefine.CHUPAI_STATUS.START;
+	NetMessageMgr.send(NetProtocolList.ChuPaiMessageNum.netID, content);
 }
 
 //本门风提示
@@ -344,8 +349,7 @@ GameManager.ChuPaiNotice = function(data){
 	var deskType = this.getDeskTypeByPos(data.PlayerIdx);
 	this.lastChuPaiDir = deskType;
 	var player   = this.playerList[deskType];
-	var pai      = data.Atile;
-	player.chuPai(pai);
+	player.chuPai(data.Atile, this.curChuPaiUdid);
 }
 
 //获取吃牌的旋转角度
@@ -360,9 +364,9 @@ GameManager.getEatPaiRotate = function(meDeskType){
 	}	
 	var meIsShang = (meDeskType === GameDefine.DESKPOS_TYPE.SHANG);
 	var meIsYou   = (meDeskType === GameDefine.DESKPOS_TYPE.YOU);
-	rotate        = (meIsShang) ? 0 - rotate : rotate;
+	// rotate        = (meIsShang) ? 0 - rotate : rotate;
 	var index     = rotate > 0 ? 2 : 0;
-	index         = (meIsYou) ? 2 - index : index;
+	// index         = (meIsYou) ? 2 - index : index;
 	return {rotate : rotate, index : index};
 }
 
@@ -540,15 +544,21 @@ GameManager.RestoreListenReminder = function (data) {
 
 /*  结算战绩  */
 GameManager.ZhanJiNotice = function(data){
-	this.reportData.curRoundReport = data.HuSus;
+	log("-----data", data);
+	for(let i =0; i<4; i++){
+		var resultData    = data.info[i];
+		var deskType      = this.getDeskTypeByPos(i);
+		resultData.player = this.playerList[deskType];
+	}
 	this.reportData.roudReady = true;
-	this.showRoundReport();
+	this.gameUICB.showSingleReport(data);
 }
 
 GameManager.TotalZhanJiNotice = function(data){
+	/*
 	this.reportData.totalRoundReport = data.HuSus;
 	this.reportData.totalReady = true;
-	this.showRoundReport();
+	this.showRoundReport();*/
 },
 
 GameManager.showRoundReport = function(){
@@ -564,6 +574,48 @@ GameManager.showRoundReport = function(){
 		}
 		this.gameUICB.showRoundReport(this.reportData, nameList);
 	}
+}
+
+GameManager.startEnd = function(){
+	var self = this;
+	var data = {"info":[{"ishu":true,"iszm":false,"islz":false,"isby":false,"isth":false,"isdh":false,"hp":11,"sp":[11,11,29,28,39,39,15],"zhp":[[31,32,33],[53,53,53],[],[]],"jdhs":22,"xdhs":66,"pxdhs":{"1":22,"2":22,"3":22},"hsxq":{"dh":10,"yak":8,"yk":4}},{"ishu":false,"iszm":false,"islz":false,"isby":false,"isth":false,"isdh":false,"hp":0,"sp":[14,26,29,28,26,27,37,38,35,38,51,51,43],"zhp":[[],[],[],[]],"jdhs":0,"xdhs":-30,"pxdhs":{"0":-22,"2":-4,"3":-4},"hsxq":{}},{"ishu":false,"iszm":false,"islz":false,"isby":false,"isth":false,"isdh":false,"hp":0,"sp":[17,14,13,13,28,22,27,22,21,26],"zhp":[[],[41,41,41],[],[]],"jdhs":8,"xdhs":-18,"pxdhs":{"0":-22,"1":4,"3":0},"hsxq":{"yk":4,"zfbk":1}},{"ishu":false,"iszm":false,"islz":false,"isby":false,"isth":false,"isdh":false,"hp":0,"sp":[16,14,16,24,21,23,27,39,39,15],"zhp":[[],[],[12,12,12,12],[]],"jdhs":8,"xdhs":-18,"pxdhs":{"0":-22,"1":4,"2":0},"hsxq":{"rmg":8}}]};
+	setTimeout(function(){
+		for(let i =0; i<4; i++){
+			var resultData    = data.info[i];
+			var player = {};
+			player.playerData = {};
+			player.playerData.UserId = i;
+			player.playerData.Name = "bitch";
+			player.direction = i;
+			player.IsSelfPlayer = (i=== 3);
+			player.paiDataObj = {};
+			player.paiDataObj.pengGangPai = {};
+			var gang = [];
+			for(let i = 0; i<1; i++){
+				gang[i] = [];
+				for(let k = 0; k<4; k++){
+					gang[i].push({id:13, rotate : 0});
+				}
+				
+			}
+			gang[0][3].rotate = 90;
+			var peng = [];
+			for(let i = 0; i<2; i++){
+				peng[i] = [];
+				for(let k = 0; k<3; k++){
+					peng[i].push({id:12, rotate : 0});
+				}
+			}
+			peng[0][0].rotate = -90;
+			peng[1][2].rotate = 90;
+			player.paiDataObj.pengGangPai.gang = gang;
+			player.paiDataObj.pengGangPai.peng = peng;
+			resultData.player = player;
+
+		}
+		self.reportData.roudReady = true;
+		self.gameUICB.showSingleReport(data);
+	}, 1000)
 }
 
 

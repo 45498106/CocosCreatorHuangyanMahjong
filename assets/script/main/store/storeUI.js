@@ -2,12 +2,18 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-       storeNode : cc.Node,
+       storeNode    : cc.Node,
+       shopListNode : cc.Node,
     },
 
     // use this for initialization
     onLoad: function () {
 
+    },
+
+    onBtnBuyRoomCardClicked : function(event, customEventData){
+        cc.log("--- customEventData:", customEventData)
+        
     },
 
     onBtnCloseClicked : function(){

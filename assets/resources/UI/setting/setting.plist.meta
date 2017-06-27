@@ -162,6 +162,28 @@
       "spriteType": "normal",
       "subMetas": {}
     },
+    "dikuang6_2.png": {
+      "ver": "1.0.3",
+      "uuid": "35f7b51f-ce57-4df4-965a-ba5ae1cc1522",
+      "rawTextureUuid": "2db9a82a-c854-484c-b7aa-c87b8c58fb80",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 316,
+      "trimY": 2,
+      "width": 79,
+      "height": 59,
+      "rawWidth": 81,
+      "rawHeight": 61,
+      "borderTop": 8,
+      "borderBottom": 8,
+      "borderLeft": 9,
+      "borderRight": 8,
+      "spriteType": "normal",
+      "subMetas": {}
+    },
     "gou.png": {
       "ver": "1.0.3",
       "uuid": "57f4c9c0-51e6-4173-99fc-bdb0505edc6e",

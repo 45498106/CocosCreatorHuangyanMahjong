@@ -13,7 +13,7 @@ cc.Class({
     onLoad: function () {
         this.paiListNode        = this.node.getChildByName("paiNode");
         this.btnInvite          = this.node.getChildByName('btnInvite');
-        this.btnInvite.active   = true;
+        this.btnInvite.active   = false;
         this.playerInfoN        = this.node.getChildByName("info");
         this.playerInfoN.active = false;
         this.btnInvite.on("touchend", this.onBtnInviteCliicked, this);
@@ -76,13 +76,7 @@ cc.Class({
     //设置拍得响应图案
     setStartPai : function(){
         this.paiListNode.removeAllChildren();
-        var shouPaiList = this.paiObjData.shouShangPai;
-        for (var k = 0; k < shouPaiList.length; k++) {
-            let pai         = shouPaiList[k]
-            var paiChildN   = this.createPaiNode(pai)
-            paiChildN.setPosition(this.UIControl.getShouPaiPos(k));
-            this.paiListNode.addChild(paiChildN, (parseInt(k) + 1));
-        }
+        this.refreShouPaiPos()
         this.refreCaiShenColor();
     },
 
@@ -91,15 +85,17 @@ cc.Class({
         for (var k = 0; k < shouPaiList.length; k++) {
             let pai         = shouPaiList[k]
             var paiChildN   = this.paiListNode.getChildByName(pai.udid);
+            if(!paiChildN){
+                paiChildN   = this.createPaiNode(pai)
+                this.paiListNode.addChild(paiChildN);
+            }
             paiChildN.setPosition(this.UIControl.getShouPaiPos(k));
+            paiChildN.setLocalZOrder(this.UIControl.getShouZorder(k));
         }
     },
 
-    
     createPaiNode : function(pai){
-        var paiNode  = cc.instantiate(this.paiPrefab);
-        paiNode.name = pai.udid;
-        paiNode.pai  = pai
+        var paiNode = this.createPengGangNode(pai);
         if(this.deskType === GameDefine.DESKPOS_TYPE.XIA){
             var self = this;
             paiNode.on("touchend", function(event){
@@ -111,9 +107,11 @@ cc.Class({
     },
 
     createPengGangNode : function(pai){
-        var paiNode = cc.instantiate(this.paiPrefab);
-        paiNode.pai  = pai
-        paiNode.name = pai.udid;
+        var paiNode     = cc.instantiate(this.paiPrefab);
+        paiNode.anchorX = this.UIControl.nodeAnchorX;
+        paiNode.anchorY = this.UIControl.nodeAnchorY;
+        paiNode.pai     = pai
+        paiNode.name    = pai.udid;
         return paiNode
     },
 
@@ -131,7 +129,9 @@ cc.Class({
         var children = this.paiListNode.children;
         for (var i = 0; i < children.length; ++i) {
             var item = children[i]
-            var bg   = item.getChildByName("bg");
+            var main = item.getChildByName("main");
+            if(!main){continue}
+            var bg   = main.getChildByName("bg");
             if(bg){
                 var isCaiShen = (item.pai && item.pai.id == caishenID)
                 var pColor    = isCaiShen ? new cc.Color(155, 255, 131) : new cc.Color(255, 255, 255);
@@ -192,12 +192,13 @@ cc.Class({
 //        
 //     },
 
-
+    
     refreGangPai : function(){
         var gangList = this.paiObjData.pengGangPai.gang;
+        this.UIControl.refreGangLen(gangList);
         for (var grounpIndex = 0; grounpIndex < gangList.length; grounpIndex++) {
             let gang = gangList[grounpIndex];
-            let gangPosList = this.UIControl.getGangPosList(grounpIndex, gang);
+            // let gangPosList = this.UIControl.getGangPosList(grounpIndex, gang);
            for (var index = 0; index < gang.length; index++) {
                 let pai = gang[index];
                 let paiNode = this.paiListNode.getChildByName(pai.udid);
@@ -205,24 +206,25 @@ cc.Class({
                     paiNode = this.createPengGangNode(pai);
                     this.paiListNode.addChild(paiNode);
                 }
-
                 if(!paiNode.isPengGangFrame){
                     this.gameUI.setPengGangPaiSprite(paiNode, this.deskType, pai, 
                         this.UIControl.pengGangScale);
                     paiNode.isPengGangFrame = true;
                 }
-                // let paiPos = this.UIControl.getGangPaiPos(grounpIndex, index, pai)
-                let zOrder = grounpIndex * 10 + parseInt(index) + 1
-                paiNode.setLocalZOrder(grounpIndex * 10 + parseInt(index) + 1);
-                paiNode.setPosition(gangPosList[index])
+                paiNode.setLocalZOrder(this.UIControl.getZorder(grounpIndex, index));
+                paiNode.setPosition(this.UIControl.getGangPos(grounpIndex, index));
             }
         }
-        this.UIControl.refreStartPos(this.paiObjData.pengGangPai);
+        if(this.deskType === GameDefine.DESKPOS_TYPE.SHANG){
+            log("this is is deskType" , this.paiListNode)
+        }
+        
     },
 
     refrePengPai : function(){
         var pengList = this.paiObjData.pengGangPai.peng;
-       for (var grounpIndex = 0; grounpIndex < pengList.length; grounpIndex++) {
+        this.UIControl.refrePengLen(pengList);
+        for (var grounpIndex = 0; grounpIndex < pengList.length; grounpIndex++) {
             let peng = pengList[grounpIndex];
             for (var index = 0; index < peng.length; index++) {
                 let pai = peng[index];
@@ -236,13 +238,10 @@ cc.Class({
                         this.UIControl.pengGangScale);
                     paiNode.isPengGangFrame = true;
                 }
-                let paiPos = this.UIControl.getPengPaiPos(grounpIndex, index, pai);
-                let zOrder = grounpIndex * 10 + parseInt(index) + 1
-                paiNode.setLocalZOrder(zOrder);
-                paiNode.setPosition(paiPos)
+                paiNode.setLocalZOrder(this.UIControl.getZorder(grounpIndex, index));
+                paiNode.setPosition(this.UIControl.getPengPos(grounpIndex, index))
             }
         }
-        this.UIControl.refreStartPos(this.paiObjData.pengGangPai);
     },
 
     //摸牌

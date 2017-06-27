@@ -1,0 +1,999 @@
+消息结构：
+type Packet struct {           
+        code  uint32           
+        bytes []byte           
+}
+
+code为前4个字节　表示消息id
+bytes为字符串，表示消息内容
+某些消息是只有code　没有bytes的
+
+
+
+----------------------------------------
+现有消息命令号如下
+----------------------------------------
+
+const (
+
+	//摸牌
+
+	MoPaiMessageNum  = 102 //执行摸牌判断之后，底层直接调用网络层发送摸牌消息，转换状态
+	MoPaiNoticeNum   = 103 //在牌局控制层向监听玩家发送
+
+	//出牌
+	ChuPaiReminderNum = 201 //在进入自然待基态时发送一个出牌提示
+	ChuPaiMessageNum  = 202
+	ChuPaiNoticeNum   = 203 //在牌局控制层向监听玩家发送
+
+	//摸牌组合操作
+	MoPaiZuHeReminderNum = 301 //发送给监听态的摸牌玩家，内部进行状态转换，底层直接调用网络层发送摸牌组合操作提示
+	MoPaiZuHeNoticeNum   = 302 //在牌局控制层向监听玩家发送
+
+	//出牌组合操作
+	ChuPaiZuHeReminderNum = 401 //出牌判断之后，向监听玩家发送，监听玩家内部进行状态转换，并且发送消息
+	ChuPaiZuHeNoticeNum   = 402 //在牌局控制层向监听玩家发送
+
+	//吃碰杠胡过
+	ChiPaiMessageNum  = 501
+	PengPaiMessageNum = 502
+	//两种杠牌消息，第一种为手中有一张，刻子有三张，于摸牌时杠牌;第二种为手中有三张，出牌有一张，于别人出牌时杠牌;
+	MingGang1PaiMessageNum = 503
+	MingGang2PaiMessageNum = 504
+	AnGangPaiMessageNum    = 505
+	PuTongHuPaiMessageNum  = 506
+	ZiMoHuPaiMessageNum    = 507
+	GuoMoPaiMessageNum     = 508
+	GuoChuPaiMessageNum    = 509
+    RestoreListenReminderNum = 510 //该消息用于将出牌组合操作中的低优先级玩家还原为listen态
+
+    //对于出牌的吃碰杠胡需要给一个回复消息，确认是否成功，以及失败原因
+    ChiPaiAckMessageNum       = 521 
+    PengPaiAckMessageNum      = 522 
+    MingGang2PaiAckMessageNum = 523 
+    PuTongHuPaiAckMessageNum  = 524
+
+	MingGang1PaiAckMessageNum = 525
+	AnGangPaiAckMessageNum    = 526
+	ZiMoHuPaiAckMessageNum    = 527
+
+	//抢杠
+	QiangGangReminderNum     = 601
+	QiangGangHuPaiMessageNum = 602
+	QiangGangNoticeNum       = 603
+	GuoQiangGangMessageNum   = 604
+    QiangGangHuPaiAckMessageNum = 605
+
+	//发牌
+	FaPaiMessageNum    = 801
+	FaPaiAckMessageNum = 802
+	//定财神通知
+	CaiShengPaiNoticeNum = 803
+	//本门风提示
+	BenMenFengReminderNum = 804
+	//生牌阶段通知
+	ShengPaiStageNoticeNum = 805
+    //一局完成之后的战绩通知消息    
+    ZhanJiNoticeNum = 806
+
+    //一盘完成之后的战绩通知消息    
+    TotalZhanJiNoticeNum = 807 
+
+	//------------------牌局相关消息-------------------
+
+	//创建房间及其应答
+	CreateRoomMessageNum    = 701
+	CreateRoomAckMessageNum = 702
+
+	//进入房间
+	EnterRoomMessageNum    = 711
+	EnterRoomAckMessageNum = 712
+	EnterRoomNoticeNum     = 713
+
+	//准备提示,准备消息,准备通知
+	PrepareMessageNum    = 722
+	PrepareAckMessageNum = 723
+	PrepareNoticeNum     = 724
+
+	//投票发起，投票，投票提示
+	VotingStartMessageNum = 731
+	VotingReminderNum     = 732
+	VotingMessageNum      = 733
+	VotingRstNoticeNum    = 734
+
+	//解散房间
+	DissolveRoomMessageNum    = 741
+	DissolveRoomAckMessageNum = 742
+	DissolveRoomNoticeNum     = 743
+	//退出房间
+	ExitRoomMessageNum    = 751
+	ExitRoomAckMessageNum = 752
+	ExitRoomNoticeNum     = 753
+	//心跳消息
+	HeartbeatMessageNum = 761
+
+	//在其他gw上登录
+	OtherLoginMessageNum    = 901
+	OtherLoginAckMessageNum = 902
+	OtherLoginNotify        = 903
+
+	//下线消息
+	OffLineMessageNum    = 911
+	OffLineAckMessageNum = 912
+	OffLineNoticeNum     = 913
+
+    ReconnectNoticeNum  = 922 //通知其他玩家某个玩家重连成功
+    SyncTileInfoNum     = 923 //在客户端重连成功之后，告知客户端当前牌面信息
+
+
+        QueryPanZhanJiMessageNum    = 931
+        QueryPanZhanJiAckMessageNum = 932
+
+        //查询一局战绩
+        QueryJuZhanJiMessageNum    = 933
+        QueryJuZhanJiAckMessageNum = 934
+
+        //查询录像数据
+        QueryVideoMessageNum    = 935
+        QueryVideoAckMessageNum = 936
+
+        //公告消息
+        //服务端-客户端
+        GetAnnouncementNum      = 941
+        GetAnnouncementAckNum   = 942
+        GetScrollNewsNum        = 943
+        GetScrollNewsAckNum     = 944
+        SetScrollNewsPlayNum    = 945
+        SetScrollNewsPlayAckNum = 946
+
+        //邮件
+        PullMailNum       = 951
+        PushMailNum       = 952
+        GetMailComfirmNum = 953
+        ExecMotionNum     = 954
+        ExecMotionAckNum  = 955
+
+        //超级滚动消息
+        ImportantScrollNewsNum            = 961
+        ImportantScrollNewsAckNum         = 962
+        ImportantScrollNewsToClientNum    = 963
+        ImportantScrollNewsToClientAckNum = 964
+
+)
+
+
+消息说明如下：
+
+
+
+
+
+-----------
+提示
+-----------
+即需要由玩家或者客户端推动流程时，发送提示
+
+
+
+
+出牌提示：服务端发送给客户端，告知其需要进行出牌操作
+摸牌组合操作提示：服务端针对一个摸牌玩家进行组合操作计算，通知该玩家他能进行哪些组合操作
+               注意只发送到当事玩家，不发送到其余玩家，即其余玩家看不到当事玩家在决定是否进行组合操作 　
+               这里为通信性能考虑，只需要发送一个消息告知可以进行的多个操作，而不能分成多个消息．
+出牌组合操作提示：服务端针对一个玩家的出牌计算其他所有玩家可以进行的组合操作，通知他们可以进行组合操作（吃／碰／明杠／普通胡／出牌过）
+               同样只告知当事玩家　不告知其他玩家
+               这里为通信性能考虑，只需要发送一个消息告知可以进行的多个操作，而不能分成多个消息．
+
+
+
+-----------
+通知
+-----------
+即需要通过玩家（发送消息）告知客户端别的客户端进行了什么操作
+
+
+摸牌通知：服务端发送给其他玩家，告知　一个玩家进行了一次摸牌，只是不需要告诉他们摸的是什么牌
+出牌通知：一个玩家出了一张牌，需要通知其他玩家他出的是什么牌
+摸牌组合操作通知：服务端发送给其他玩家，告知　一个玩家进行了一次摸牌组合操作(即　明杠1/暗杠/自摸胡)
+出牌组合操作通知：服务端发送给其他玩家，告知　一个玩家进行了一次出牌组合操作(即　吃/碰/明杠2/胡)
+
+-----------
+消息
+-----------
+即客户端发送给服务端的　推动牌局流程的东西
+
+摸牌消息：由服务端发送给客户端的消息，告知客户端摸了一张什么牌
+出牌消息：由客户端发送给服务端的消息，表明客户端决定出哪张牌，是对出牌提示的响应
+吃牌消息：由客户端发送给服务端的消息，表明客户端决定吃哪张牌，是对出牌组合操作提示的响应
+碰牌消息：由客户端发送给服务端的消息，表明客户端决定碰哪张牌，是对出牌组合操作提示的响应
+
+明杠消息：由客户端发送给服务端的消息，表明客户端决定杠哪张牌，是对出牌组合操作提示的响应
+暗杠消息：由客户端发送给服务端的消息，表明客户端决定杠哪张牌，是对摸牌组合操作提示的响应
+
+自摸胡消息：由客户端发送给服务端的消息，表明客户端决定胡牌，是对摸牌组合操作提示的响应
+普通胡消息：由客户端发送给服务端的消息，表明客户端决定胡哪张牌，是对出牌组合操作提示的响应
+
+摸牌组合过牌消息：由客户端发送给服务端的消息，表明客户端不进行任何组合操作
+出牌组合过牌消息：由客户端发送给服务端的消息，表明客户端不进行任何组合操作
+
+
+
+以上消息可以统称为如下
+摸牌组合操作消息：包括明杠1 暗杠　自摸胡　摸牌组合过牌消息
+出牌组合操作消息：包括吃　碰　明杠2　普通胡　出牌组合过牌消息
+
+
+
+
+
+对客户端来说
+摸牌流程：
+1.服务端发送　摸牌消息　告知客户端摸牌信息
+---
+若是对于摸牌可以进行操作，则
+2.服务端发送　摸牌组合操作提示　告诉客户端可以对于摸牌进行的操作
+3.服务端等待　客户端的选择
+---
+4.服务端向客户端发送　出牌提示　告知需要客户端出牌操作
+5.服务端等待　客户端的出牌消息
+
+出牌流程：
+1 对于某个玩家的出牌，服务端计算其他玩家是否能够进行操作，
+若是能够进行操作，则向玩家发送出牌组合操作提示
+服务端等待　客户端的消息（吃/碰/明杠2/普通胡）
+若是没有玩家能够进行操作，就由服务端向应该摸牌的玩家发送摸牌消息
+
+2 在多个玩家都能够进行出牌组合操作的情况下，
+若是最高优先级的操作到来，服务端会响应，若是非最高优先级的操作到来，服务端不会响应
+优先级：
+胡
+碰/杠
+吃
+
+例子：
+a 出牌　二条
+b　可吃
+c 可碰
+d 可胡
+
+此时 b/c操作没有效果，只有d过了，c操作才有效果，只有c过了，b操作才有效果
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----------------------------------------
+对应消息结构，即 json
+----------------------------------------
+
+
+//错误消息
+type MsgErrorRsp struct {
+	Error string `json:"error"`
+}
+
+注释：
+string　表示字符串
+int8/uint8　表示整数
+float 表示浮点数
+[]int8 表示整数数组，对应json数组表示
+
+
+
+如 MsgErrorRsp　的json表示是
+{
+"error":"xxx"
+}
+
+
+如 MoPaiNotice　的json表示是
+{
+"pidx":"xxx"
+}
+
+
+如 MoPaiMessage　的json表示是
+{
+"tile":"xxx"
+}
+
+
+
+
+
+
+
+// 摸牌消息
+type MoPaiMessage struct {
+	Atile int8 `json:"tile"`
+}
+
+//摸牌通知
+type MoPaiNotice struct {
+	PlayerIdx int8 `json:"pidx"`  //哪个玩家进行了摸牌动作
+}
+
+
+//出牌消息
+type ChuPaiMessage struct {
+
+	Atile int8 //出的什么牌
+}
+
+//出牌通知
+type ChuPaiNotice struct {
+	PlayerIdx int8 //哪个玩家进行了摸牌动作
+	Atile     int8 // 出个什么牌
+}
+
+
+//摸牌组合提示
+//注意：本次摸的牌，和明杠2/暗杠并不一定有直接关系
+//可能手中早就有４张牌可以杠了，因此每次摸牌都需要检查所有牌
+type MoPaiZuHeReminder struct {
+
+	//摸牌
+	Atile int8
+	//用来提示客户端可以进行何种操作，　一个8位，分别表示
+	//明杠2/暗杠/自摸胡/吃/碰/明杠1/普通胡
+	Opts uint8
+	//明杠2/暗杠可能有多组数据
+	//使用一个map，键为操作类型，如，值为可以进行该操作的牌，可能多张牌因此是一个列表
+	//const (
+	//MingGang1 = 6
+	//AnGang    = 5
+	//ZiMoHu    = 4
+	//ChiPai    = 3
+	//PengPai   = 2
+	//MingGang2 = 1
+	//PuTongHu  = 0
+	//)
+	//假如对于Atile5可以明杠2，对于7可以暗杠
+	//6:{5}
+	//5:{7}
+
+	Data map[uint8][]uint8
+}
+
+//摸牌组合通知
+type MoPaiZuHeNotice struct {
+	PlayerIdx int8      `json:"pidx"`
+	Atile     int8      `json:"tile"`
+	Opts      uint8     `json:"opts"`
+}
+
+
+//出牌组合提示
+type ChuPaiZuHeReminder struct {
+	//出牌
+	Atile int8
+	//用来提示客户端可以进行何种操作，　一个8位，分别表示
+	//明杠2/暗杠/自摸胡/吃/碰/明杠1/普通胡
+	Opts uint8
+	//对于吃操作有多种吃法，这里需要提示
+	//使用一个二维切片，一个元素就是一种吃法的另外两种牌
+	//假如Atile为5, 在Data 可以是{{3,4},{4,6},{6,7}}
+	Data [][]int8
+}
+
+
+//出牌组合通知
+type ChuPaiZuHeNotice struct {
+	PlayerIdx int8
+	Atile     int8
+	Opts      uint8
+	//吃牌时需要指定是哪种组合
+	Data []int8
+}
+
+
+//吃牌消息
+type ChiPaiMessage struct {
+	Atile int8
+	Data  []int8
+}
+
+
+//如下消息类型事实上差不多，但是若是合成一个消息，则每个消息就要增加int8，降低通信性能
+//因此还是分开定义
+//碰牌消息
+type PengPaiMessage struct {
+	Atile int8
+}
+
+
+
+//明杠1
+type MingGang1PaiMessage struct {
+
+	Atile int8
+}
+
+
+
+//明杠2
+type MingGang2PaiMessage struct {
+
+	Atile int8
+}
+
+
+
+//暗杠
+type AnGangPaiMessage struct {
+	Atile int8
+}
+
+
+//普通胡
+type PuTongHuPaiMessage struct {
+
+	Atile int8
+}
+
+
+
+//自摸胡
+type ZiMoHuPaiMessage struct {
+
+	Atile int8
+}
+
+
+
+//过摸牌组合
+type GuoMoPaiMessage struct {
+
+	Atile int8
+}
+
+
+
+//过出牌组合
+type GuoChuPaiMessage struct {
+
+	Atile int8
+}
+
+
+
+//抢杠消息
+type QiangGangMessage struct {
+
+	Atile int8
+}
+
+
+
+//抢杠通知
+type QiangGangNotice struct {
+	PlayerIdx int8
+	Atile     int8
+}
+
+
+//吃牌回复消息
+type ChiPaiAckMessage struct {
+        Rst    bool   //操作结果
+        Reason string //原因
+}
+
+
+
+//碰牌回复消息
+type PengPaiAckMessage struct {
+        Rst    bool   //操作结果
+        Reason string //原因
+}
+
+
+
+//明杠2回复消息
+type MingGang2PaiAckMessage struct {
+        Rst    bool
+        Reason string //原因
+}
+
+
+
+
+//普通胡回复消息
+type PuTongHuPaiAckMessage struct {
+        Rst    bool
+        Reason string //原因
+}
+
+
+
+
+//枪杠回复消息
+type QiangGangAckMessage struct {
+        Rst    bool   //操作结果
+        Reason string //原因
+}
+
+
+
+//明杠1回复消息
+type MingGang1PaiAckMessage struct {
+        Rst    bool   //操作结果
+        Reason string //原因
+}
+
+
+
+//暗杠回复消息
+type AnGangPaiAckMessage struct {
+        Rst    bool   //操作结果
+        Reason string //原因
+}
+
+
+
+//自摸胡回复消息
+type ZiMoHuPaiAckMessage struct {
+        Rst    bool   //操作结果
+        Reason string //原因
+}
+
+
+
+
+
+
+
+
+
+
+
+//创建房间
+type CreateRoomMessage struct {
+	PlayerID        int32    //房主帐号，临时使用，可能添加微信登录时再进行修改
+	RoomInformation RoomInfo //房间信息
+}
+
+
+
+//创建房间应答
+type CreateRoomAckMessage struct {
+	RoomID int32
+}
+
+
+
+//进入房间
+type EnterRoomMessage struct {
+	PlayerID int32 //玩家帐号
+	RoomID   int32 //房间id
+}
+
+
+//进入房间应答
+type EnterRoomAckMessage struct {
+	RoomInformation RoomInfo
+	PlayersInfo     []RoomPlayerInfo
+}
+
+
+//进入房间通知
+type EnterRoomNotice struct {
+	PlayerInformation RoomPlayerInfo
+}
+
+
+
+
+
+
+
+
+//准备回复消息
+type PrepareAckMessage struct {
+
+	Rst bool
+}
+
+
+
+
+
+
+//投票提示消息
+type VotingReminder struct {
+	PlayerIdx  int8   //发起投票玩家座位号
+	PlayerName string //发起投票玩家名字
+}
+
+
+//投票消息
+type VotingMessage struct {
+
+	VotingRst bool
+}
+
+
+
+//投票结果
+type VotingRstNotice struct {
+	VotingRst bool
+}
+
+
+
+
+
+//解散房间回复消息
+type DissolveRoomAckMessage struct {
+	Rst bool
+}
+
+
+
+//退出房间回复消息
+type ExitRoomAckMessage struct {
+	Rst bool
+}
+
+
+
+//退出房间通知
+type ExitRoomNotice struct {
+	PlayerIdx int8
+}
+
+
+//发牌消息
+type FaPaiMessage struct {
+	Tiles []int8
+}
+
+
+
+//财神牌通知
+type CaiShengPaiNotice struct {
+	Atile int8
+}
+
+
+
+//本门风通知
+type BenMenFengReminder struct {
+	Atile int8
+}
+
+
+
+type OffLineNotice struct {
+	UserId int64
+}
+
+
+//重连通知
+type ReconnectNotice struct {
+        UserId int64
+}
+
+
+
+type ZuHeInfo struct {
+        Chi      []int8
+        Peng     []int8
+        Minggang []int8
+        Angang   []int8
+}
+type CurrentTileInfo struct {
+        ChuTilesInfo  []int8   //玩家出牌详细
+        ZHInfo        ZuHeInfo //玩家组合信息
+        HandTileCount int8     //玩家手牌数量
+}
+type ReconnectTileInfo struct {
+        LeftTileCount   int  //余牌数量
+        FinishGameCount int8 //当前局数
+        JokerTile       int8 //财神牌
+        ZhuangIdx       int8 //庄家idx
+
+        SelfIdx          int8   //重连玩家idx
+        SelfCurrentTiles []int8 //重连玩家手牌详细
+
+        TileInfos map[int8]CurrentTileInfo //各玩家包括重连玩家的牌局信息
+
+}
+
+//重连之后牌局信息同步
+type SyncTileInfo struct {
+        Infos ReconnectTileInfo
+}
+
+
+
+
+
+
+
+
+
+
+type QueryPanZhanJiMessage struct {
+        UserId int64 `json:"userId"`
+        Page   int   `json:"page"`
+        Count  int   `json:"count"`
+}
+
+
+type PanZhanJiInfo struct {
+        PanId       int    `json:"panId"`
+        JuNum       int    `json:"juNum"`
+        StartTime   string `json:"time"`
+        PlayerIdx   int8   `json:"Idx"`
+        XDHushuIdx0 int    `json:"hu0"`
+        XDHushuIdx1 int    `json:"hu1"`
+        XDHushuIdx2 int    `json:"hu2"`
+        XDHushuIdx3 int    `json:"hu3"`
+}
+
+type QueryPanZhanJiAckMessage struct {
+        TotalHushu     int              `json:"ths"`
+        TotalJuShu     int              `json:"tjs"`
+        WinRate        float32          `json:"wr"`
+        PanZhanJiInfos []*PanZhanJiInfo `json:"infos"`
+}
+
+
+
+
+type QueryJuZhanJiMessage struct {
+        UserId int64 `json:"userId"`
+        PanId  int   `json:"panId"`
+}
+
+
+
+type JuZhanJiInfo struct {
+        JuId        int `json:"juId"`
+        XDHushuIdx0 int `json:"hu0"`
+        XDHushuIdx1 int `json:"hu1"`
+        XDHushuIdx2 int `json:"hu2"`
+        XDHushuIdx3 int `json:"hu3"`
+}
+
+type QueryJuZhanJiAckMessage struct {
+        JuZhanJiInfos []*JuZhanJiInfo `json:"infos"`
+}
+
+
+
+
+//一盘/一局完成之后的结算消息
+//用于　PlayerZhanJiInfo.HuShuInfo 中的键
+const (
+        //胡数 
+        DH   = "dh" //底胡10
+        DZ   = "dz"　//对子
+        YK   = "yk" //硬刻
+        RK   = "rk"　//软刻
+        YAK  = "yak"　//硬张暗刻
+        RAK  = "rak" //软张暗刻
+        YMG  = "ymg" // 硬张明杠
+        RMG  = "rmg" //　软张明杠
+        YAG  = "yag"　// 硬张暗杠
+        RAG  = "rag"　// 软张暗杠
+        ZM   = "zm" //自摸
+        ZMQD = "zmqd"　//自摸嵌档
+        DDH  = "ddh" //对对胡
+        GSH  = "gsh" //杠上花
+        //翻数，未胡牌/已胡牌翻数
+        ZFBK = "zfbk" //中发白刻子
+        ZFBG = "zfbg" //中发白杠
+        SFK  = "sfk" //本门风刻子
+        SFG  = "sfg" //本门风杠
+        //翻数，已胡牌翻数
+        WCS  = "wcs" //无财神
+        CSHY = "cshy" //财神还原
+        HYS  = "hys" //混一色
+        QYS  = "qys" //清一色
+)
+
+
+type PlayerZhanJiInfo struct {
+
+        //身份
+        IsHuPai   bool `json:"ishu"`
+        IsZiMo    bool `json:"iszm"`
+        IsLaZi    bool `json:"islz"`
+        IsBaoYuan bool `json:"isby"`
+        IsTianHu  bool `json:"isth"`
+        IsDiHu    bool `json:"isdh"`
+
+        //牌面
+        HuPai   int8     `json:"hp"`
+        ShouPai []int8   `json:"sp"`
+        ZuHePai [][]int8 `json:"zhp"` //元素[]int8 依次表示吃/碰/明杠/暗杠
+
+        //胡数
+        JueDuiHuShu          int            `json:"jdhs"`
+        XiangDuiHuShu        int            `json:"xdhs"`
+        PlayersXiangDuiHuShu map[int]int    `json:"pxdhs"`
+        HuShuInfo            map[string]int `json:"hsxq"`
+}
+
+//一局战绩消息
+type ZhanJiNotice struct {
+        Infos []*PlayerZhanJiInfo `json:"info"` //胡数　0,1,2,3 座位号对应玩家胡数
+}
+
+
+//TotalZhanJiNotice的键
+const (
+        ZIMOCOUNT = iota + 0　　//从0开始递增1
+        HUPAICOUNT
+        LAZICOUNT
+        BAOYUANCOUNT
+        TIANHUCOUNT
+        DIHUCOUNT
+        XIANGDUIHUSU
+        ZHANJIINFOCOUNT
+)
+
+//一盘战绩消息
+type TotalZhanJiNotice struct {
+        TotalInfos *map[int8][]int
+}
+
+
+
+
+
+
+
+
+
+type QueryVideoMessage struct {
+        UserId int64 `json:"userId"`
+        PanId  int   `json:"panId"`
+        JuId   int   `json:"juId"`
+}
+
+
+type QueryVideoAckMessage struct {
+        VideoJson  string `json:"videoData"`
+        ZhanjiJson string `json:"zhanjiData"`
+}
+
+
+
+type GetAnnouncement struct {
+        AnnounceId []int `json:"id"`
+}
+
+
+
+type AnnounceContent struct {
+        Id      int    `json:"id"`
+        Name    string `json:"name"`
+        Website string `json:"addr"`
+}
+
+type GetAnnouncementAck struct {
+        NeedDel []int              `json:"delId"`
+        NeedAdd []*AnnounceContent `json:"addId"`
+}
+
+
+
+type SetScrollNewsPlay struct {
+        PlayerPeriod int `json:"pp"` //播放周期
+        PlayerMethod int `json:"pm"` //播放方式: 随机/顺序
+}
+
+
+
+type GetScrollNews struct {
+        NewsId []int `json:"id"`
+}
+
+
+
+
+
+
+type ScrollNewsContent struct {
+        Id      int    `json:"id"`
+        Content string `json:"cont"`
+}
+
+type GetScrollNewsAck struct {
+        PlayerPeriod int                  `json:"pp"` //播放周期
+        PlayerMethod int                  `json:"pm"` //播放方式: 随机/顺序
+        NeedDel      []int                `json:"delId"`
+        NeedAdd      []*ScrollNewsContent `json:"addId"`
+}
+
+
+type Attachment struct {
+        Opt  int8 `json:"opt"`
+        Data int  `json:"data"`
+}
+type PushMail struct {
+        MailId   int         `json:"mId"`
+        MailType int8        `json:"mType"`
+        Attach   *Attachment `json:"att,omitempty"`
+        Content  string      `json:"cont"`
+        Time     string      `json:"time"`
+}
+
+
+type GetMailComfirm struct {
+        MailId        int  `json:"mId"`
+        MailTypeValue int8 `json:"mType"`
+}
+
+
+
+type ExecMotion struct {
+        MailId int `json:"mId"`
+}
+
+
+
+type ExecMotionAck struct {
+        MailId int `json:"mId"`
+}
+
+
+
+
+
+type ImportantScrollNewsToClient struct {
+        Content string `json:"content"`
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

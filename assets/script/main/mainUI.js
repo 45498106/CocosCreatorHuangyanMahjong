@@ -15,6 +15,9 @@ var mainUI = cc.Class({
         newsNode        : cc.Node, //消息
         zhanjiNode      : cc.Node, //战绩
         craeteRoomNode  : cc.Node, //创建房间
+        bulletinNode    : cc.Node, //系统公告
+        activityNode    : cc.Node, //活动
+        webview         : cc.WebView, //活动网址
     },
 
     // use this for initialization
@@ -24,6 +27,7 @@ var mainUI = cc.Class({
         this.refreUserID();
 
         this.onDeviceFunc();
+        this.getAnnouncementNum();
     },
 
     onDestroy : function(){
@@ -48,13 +52,18 @@ var mainUI = cc.Class({
             log("=== 这是windows设备. ===");
         }
     },
+    //想服务器请求公告信息
+    getAnnouncementNum : function(){
+        var ScrollNewsID = {};
+        ScrollNewsID.id = [];
+        NetMessageMgr.send(NetProtocolList.GetScrollNewsNum.netID, ScrollNewsID);
+    },
     
     //创建房间
     onBtnStartClicked : function(){
         // if(this.startIsClicked){return}
         // this.startIsClicked = true;    
-        this.creatGameRoomToServer();
-
+        // this.creatGameRoomToServer();
     },
 
     //进入牌桌开始打麻将
@@ -82,8 +91,15 @@ var mainUI = cc.Class({
     onBtnZhanjiClicked : function(){
         this.actionFunc(this.zhanjiNode);
     },
+
+    //创建房间
     onBtnCreateRoomClicked : function(){
         this.actionFunc(this.craeteRoomNode);
+    },
+
+    //进入活动
+    onBtnActivityClicked : function(){
+        this.actionFunc(this.activityNode);
     },
     //进入场景的动作
     actionFunc : function(node){
@@ -124,22 +140,24 @@ var mainUI = cc.Class({
     //输入号码
     onBtnEnterRoomEnter : function (event, enterNumber) {
         //输入号码满了 进入房间
+        if(this.enterNumList.length === 6)
+            return;
+        this.enterNumList.push(enterNumber);
+        this.refreEnterNumber();
         if(this.enterNumList.length === 6){
             this.sendRoomNumToServer();
-        } else if(this.enterNumList.length < 6) {
-            this.enterNumList.push(enterNumber);
-            this.refreEnterNumber();
         }
     },
 
-    onChangeUserID : function(event, id) {
+    onChangeUserID : function() {
+        var id = this.testN.getChildByName("editBox").getComponent(cc.EditBox).string
         GameDataMgr.setUserID(parseInt(id));
         this.refreUserID();
     },
 
     refreUserID : function(){
-        var idLabel = this.testN.getChildByName("name").getComponent(cc.Label);
-        var contentStr = "您的用户ID是 " + GameDataMgr.getUserID(); 
+        var idLabel = this.testN.getChildByName("layer").getChildByName("name").getComponent(cc.Label);
+        var contentStr = "您的用户ID是: " + GameDataMgr.getUserID(); 
         idLabel.string = contentStr;
     },
 
@@ -161,16 +179,26 @@ var mainUI = cc.Class({
         //输入房间号码放回的信息
         NetMessageMgr.addMessageCB(NetProtocolList.EnterRoomAckMessageNum.netID, 
             this.onRoomMessageAck, this)
-        //创建房间返回的信息
+        // 创建房间返回的信息
         NetMessageMgr.addMessageCB(NetProtocolList.CreateRoomAckMessageNum.netID, 
             this.onCreatRoomAck, this)
+        //系统滚动公告信息
+        NetMessageMgr.addMessageCB(NetProtocolList.GetScrollNewsAckNum.netID, 
+            this.onGetScrollNewsAck, this)
+        //系统活动公告信息
+        NetMessageMgr.addMessageCB(NetProtocolList.GetAnnouncementAckNum.netID, 
+            this.onGetAnnouncementAck, this)
     },
 
     unRegisgerNetMessage : function(){
         NetMessageMgr.rmMessageCB(NetProtocolList.EnterRoomAckMessageNum.netID, 
             this.onRoomMessageAck)
-        NetMessageMgr.addMessageCB(NetProtocolList.CreateRoomAckMessageNum.netID, 
+        NetMessageMgr.rmMessageCB(NetProtocolList.CreateRoomAckMessageNum.netID, 
             this.onCreatRoomAck)
+        NetMessageMgr.rmMessageCB(NetProtocolList.GetScrollNewsAckNum.netID,
+            this.onGetScrollNewsAck)
+        NetMessageMgr.rmMessageCB(NetProtocolList.GetAnnouncementAckNum.netID,
+            this.onGetAnnouncementAck)
     },
 
     sendRoomNumToServer : function () {
@@ -220,6 +248,27 @@ var mainUI = cc.Class({
         GameDataMgr.setRoomPlayers(PlayersInfo);
         roomInfo.RoomID = data.RoomID;
         this.gotoGameRoom();
+    },
+
+    //监听系统滚动公告消息
+    onGetScrollNewsAck : function(data){
+        log("-onGetScrollNewsAck-系统公告--", data)
+        var self = this;
+        var posX = this.bulletinNode.getPositionX();
+        var posY = this.bulletinNode.getPositionY();
+        this.bulletinNode.getComponent(cc.Label).string = data.addId[0].cont;
+        var length = this.bulletinNode.getContentSize().width + 600;
+        var time = length/68;
+        var action = cc.repeatForever( cc.sequence( cc.moveBy(time, cc.p(-length, 0)), 
+            cc.callFunc( function(){
+                self.bulletinNode.setPosition(cc.p(posX, posY));
+            }) ));
+        this.bulletinNode.runAction(action);
+    },
+
+    //监听系统活动公告消息
+    onGetAnnouncementAck : function(data){
+        this.webview.url = data.addId[0].addr;
     },
 
     //--------------End Server ----------------

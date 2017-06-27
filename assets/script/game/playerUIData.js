@@ -90,7 +90,6 @@ var shangControl = function(){
     
     this.getNewShowPaiPos = function(index){
         var pos = this.getShouPaiPos(index);
-        pos.x -= 10;
         return pos;
     }
     this.moveOutAction = cc.moveTo(0.4, cc.p(-300, -120));
@@ -200,7 +199,6 @@ var zuoControl = function(){
 
     this.getNewShowPaiPos = function(index){
         var pos = this.getShouPaiPos(index);
-        pos.y -= 2;
         return pos;
     }
     this.moveOutAction = cc.moveTo(0.4, cc.p(100, -240));
@@ -315,7 +313,6 @@ var youControl = function(){
     }
     this.getNewShowPaiPos = function(index){
         var pos = this.getShouPaiPos(index);
-        pos.y -= 2;
         return pos;
     }
     this.moveOutAction = cc.moveTo(0.4, cc.p(-100, 240));
@@ -451,7 +448,6 @@ var xiaControl = function(){
     }
     this.getNewShowPaiPos = function(index, iconNode){
         var pos = this.getShouPaiPos(index, iconNode);
-        pos.x -= 10;
         return pos;
     }
     this.moveOutAction = cc.moveTo(0.4, cc.p(400, 100));

@@ -8,6 +8,7 @@ cc.Class({
         endRoundN    : cc.Node,
         singleRoundN : cc.Node,
         paiPrefab    : cc.Prefab,
+        reportTagPb  : cc.Prefab,
     },
 
     // use this for initialization
@@ -19,11 +20,6 @@ cc.Class({
         this.hengWidth    = 41;
         this.huPaiScale   = 0.6;        
     },
-
-    onDestroy : function(){
-        this.singleRoundN.cleanData();
-    },
-
 
     initDirectData : function(){
         var DirectType     = GameDefine.DIRECTION_TYPE;
@@ -53,8 +49,9 @@ cc.Class({
 
                 self.setHuCountData(playerNode, itemData);
                 self.setPaiData(paiListN, itemData);
-                self.setPaiFengScore(playerNode, itemData); 
+                self.setPaiFengScore(playerNode, itemData, i); 
                 self.setFanAndHuCount(playerNode, itemData);
+                self.setReportTag(paiListN, itemData);
 
             }
         }
@@ -67,22 +64,56 @@ cc.Class({
         }
     },
 
+    //hupai  dianpao  baoyuan lazi
+    setReportTag : function(paiListN, data){
+        var leftPos = cc.p(-86, -10);
+        var rightPos = cc.p(690, -10);
+        var self = this;
+        var addTag = function(pos, showTagName){
+            var tagNode = cc.instantiate(self.reportTagPb);
+            paiListN.addChild(tagNode);
+            tagNode.setPosition(pos);
+            tagNode.getChildByName(showTagName).active = true;
+        }
+        if(data.ishu){
+            addTag(leftPos, "hu");
+        }
+        if(data.iszm){
+             addTag(leftPos, "zm");
+        }
+        if(data.islz){
+            addTag(rightPos, "lazi");
+        }
+        if(data.isby){
+            addTag(rightPos, "by");
+        }
+        if(!data.isby && data.isdp){
+            addTag(rightPos, "dp");
+        }
+
+    },
+
     //fanshu  and hushu
     setFanAndHuCount(playerNode, data){
         var fanNode = playerNode.getChildByName("fanCount");
         var huNode  = playerNode.getChildByName("huCount");
-        var fanData = "翻数: "
-        var huData  = "胡数: " 
+        var fanData = ""
+        var huData  = "" 
         for(let k in data.hsxq){
             if(GameDefine.FSTEXT[k]){
-                fanData += (GameDefine.FSTEXT[k] + data.hsxq[k] + " ");
+                fanData += (GameDefine.FSTEXT[k] +"+"+data.hsxq[k] + " ");
             }
             if(GameDefine.HSTEXT[k]){
-                huData += (GameDefine.HSTEXT[k] + data.hsxq[k]+ " ");
+                huData += (GameDefine.HSTEXT[k] +"+"+data.hsxq[k]+ " ");
             }
         }
-        fanNode.getComponent(cc.Label).string = fanData;
-        huNode.getComponent(cc.Label).string = huData;
+        if(fanData.length > 0){
+            fanNode.getComponent(cc.Label).string = "翻数: " + fanData;
+            huNode.getComponent(cc.Label).string  = "胡数: " + huData;
+        }else {
+            fanNode.getComponent(cc.Label).string = "胡数: " + huData;
+            huNode.getComponent(cc.Label).string  = "";
+        }
     },
 
     //xiangdui hushu  and  juedui hushu
@@ -111,6 +142,7 @@ cc.Class({
     setPaiData : function(paiListNode, data) {
         var pengGangPai = data.player.paiDataObj.pengGangPai;
         var shouPai     = data.sp;
+        shouPai.sort();
         //every player's pai display as like xia player  
         var destType    = GameDefine.DESKPOS_TYPE.XIA;
         var gangPaiList = pengGangPai.gang;
@@ -124,6 +156,7 @@ cc.Class({
             let curLen = 0;
             for(let i =0; i < gang.length; i++){
                 let pai     = gang[i];
+                pai.rotate  = 0;
                 var paiNode = cc.instantiate(this.paiPrefab);
                 this.gameUI.setPengGangPaiSprite(paiNode, destType, pai, this.paiScale)
                 var yPos    = (pai.rotate !== 0) ? -6 : 0; 
@@ -141,8 +174,9 @@ cc.Class({
            let peng  = pengPaiList[gIndex];
            let curLen = 0;
             for(let i =0; i < peng.length; i++){
-                let pai        = peng[i];
-                var paiNode    = cc.instantiate(this.paiPrefab);
+                let pai     = peng[i];
+                pai.rotate  = 0;
+                var paiNode = cc.instantiate(this.paiPrefab);
                 this.gameUI.setPengGangPaiSprite(paiNode, destType, pai, this.paiScale)
                 var yPos       = (pai.rotate !== 0) ? -6 : 0; 
                 var rotateDiff = (pai.rotate !== 0) ? -9.3 : 0;
@@ -177,36 +211,38 @@ cc.Class({
     },
 
     //和其他风玩家的分数
-    setPaiFengScore : function(playerNode, data){
+    setPaiFengScore : function(playerNode, data, pIndex){
         log("setPaiFengScore", playerNode, data)
-        var startIndex  = 0;
         var addColor    = new cc.Color(255, 255, 0);
         var reduceColor = new cc.Color(100, 255, 237);
-        var getFengData = function(index){
-            for(let i=0; i<2;i++){
-                if(data.pxdhs[index] !== undefined){
-                    break;
-                }
-                index +=1;
-                startIndex += 1;
+        var playerFengData = [];
+        for(let i = 0; i < 4; i++){
+            if(i === pIndex){
+                continue;
             }
-            return data.pxdhs[index];
+            let score = data.pxdhs[i];
+            score = score || 0;
+            playerFengData.push({sp: score, index : i})
         }
         for(i=0; i<3;i++){
             let fengNode = playerNode.getChildByName("feng_"+i);
             let nameNode = fengNode.getChildByName("name");
             let scoreNode= fengNode.getChildByName("content");
-            var fengData = getFengData(startIndex);
-            nameNode.getComponent(cc.Label).string  = this.directNodeName[startIndex].localText;
-            scoreNode.getComponent(cc.Label).string = (fengData > 0 ? "+" : "") + fengData;
-            scoreNode.color = (fengData > 0) ? addColor : reduceColor
-            startIndex += 1;
+            var fengData = playerFengData[i];
+            nameNode.getComponent(cc.Label).string  = this.directNodeName[fengData.index].localText;
+            scoreNode.getComponent(cc.Label).string = (fengData.sp > 0 ? "+" : "") + fengData.sp;
+            scoreNode.color = (fengData.sp > 0 > 0) ? addColor : reduceColor
         }
     },
 
     showSingleReport(){
         this.endRoundN.active    = true;
         this.singleRoundN.active = true;
+    },
+
+    hideSingleReport(){
+        this.singleRoundN.active = false;
+        this.singleRoundN.cleanData();
     },
 
     
@@ -250,7 +286,7 @@ cc.Class({
     },
 
     onBtnContiuneClicked : function(){
-
+        this.hideSingleReport();
     },
 
 

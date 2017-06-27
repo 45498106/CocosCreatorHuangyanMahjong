@@ -104,9 +104,9 @@ GameDefine.GAME_TYPE = {
 //胡数 localText
 GameDefine.HSTEXT = {
         dh :"底胡",
-        dz :"对子",
-        yk :"硬刻",
-        rk :"软刻",
+        dz :"本门风对子",
+        yk :"硬张刻子",
+        rk :"软张刻子",
         yak :"硬张暗刻",
         rak :"软张暗刻",
         ymg  :"硬张明杠",
@@ -114,7 +114,7 @@ GameDefine.HSTEXT = {
         yag 　:"硬张暗杠",
         rag 　:"软张暗杠",
         zm :"自摸",
-        zmqd :"自摸嵌档",
+        zmqd :"嵌档",
         ddh :"对对胡",
         gsh :"杠上花",
 }
@@ -129,8 +129,11 @@ GameDefine.FSTEXT = {
     wcs :"无财神",
     cshy :"财神还原",
     hys :"混一色",
-    qys :"清",
+    qys :"清一色",
 }
+
+GameDefine.CAISHENCOLOR = new cc.Color(155, 255, 131);
+GameDefine.WHITECOLOR = new cc.Color(255, 255, 255);
 
 
 module.exports = GameDefine;

@@ -3,6 +3,8 @@ var log             = utils.log;
 var NetMessageMgr   = require("NetMessageMgr");
 var GameDataMgr     = require("GameDataMgr");
 var NetProtocolList = require("NetProtocolList");
+var Audio           = require("Audio");
+
 var mainUI = cc.Class({
     extends: cc.Component,
 
@@ -28,6 +30,8 @@ var mainUI = cc.Class({
 
         this.onDeviceFunc();
         this.getAnnouncementNum();
+
+        Audio.playMusic("back.mp3");
     },
 
     onDestroy : function(){

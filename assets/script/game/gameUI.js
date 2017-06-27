@@ -76,6 +76,7 @@ cc.Class({
         var bgNode      = mainNode.getChildByName("bg");
         var bgRect      = this.setNodeSprite(bgNode, bgFrameName);
         if(deskType === GameDefine.DESKPOS_TYPE.XIA){
+            this.checkCaiShenBG(bgNode, paiID);
             var contentNode  = mainNode.getChildByName("content");
             var contentName  = "pj_"+utils.getLocalPaiID(paiID);
             this.setNodeSprite(contentNode, contentName);
@@ -103,6 +104,12 @@ cc.Class({
         return bgFrameName;
     },
 
+    checkCaiShenBG : function(bgNode, paiID){
+        var caishenID  = require("gameManager").CaiShenPai;
+        var paiColor   = caishenID === paiID ? GameDefine.CAISHENCOLOR : GameDefine.WHITECOLOR
+        bgNode.color   = paiColor;
+    },
+
     //设置碰杠牌图像资源
     setPengGangPaiSprite : function(paiNode, deskType, pai, nodeScale){
         var isRotate         = pai.rotate !== 0;
@@ -112,6 +119,7 @@ cc.Class({
         var isShangXia       = (deskType === DeskTp.XIA || deskType === DeskTp.SHANG);
         var bgFrameName      = this.getBgFreme(deskType, isShangXia, isRotate);
         var bgNode           = mainNode.getChildByName("bg");
+        this.checkCaiShenBG(bgNode, paiID);
         var bgRect           = this.setNodeSprite(bgNode, bgFrameName);
         var contentNode      = mainNode.getChildByName("content");
         var contentName      = "pj_"+utils.getLocalPaiID(paiID);

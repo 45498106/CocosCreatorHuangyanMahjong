@@ -43,7 +43,7 @@ module.exports = {
 	},
 
 	getSoundSwitch : function(){
-		return this.getLocalData(userLocalData.userID).soundSwitch;
+		return userLocalData.soundSwitch;
 	},
 
 	setMusicSwitch : function(isOn){
@@ -52,7 +52,7 @@ module.exports = {
 	},
 
 	getMusicSwitch : function(){
-		return this.getLocalData(userLocalData.userID).musicSwitch;
+		return userLocalData.musicSwitch;
 	},
 
 	//设置语音类型
@@ -62,7 +62,6 @@ module.exports = {
 	},
 
 	getAudioKind : function(){
-		cc.log(userLocalData.language)
 		return userLocalData.language;
 	},
 

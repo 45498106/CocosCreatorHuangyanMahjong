@@ -77,7 +77,7 @@ cc.Class({
     setStartPai : function(){
         this.paiListNode.removeAllChildren();
         this.refreShouPaiPos()
-        this.refreCaiShenColor();
+        // this.refreCaiShenColor();
     },
 
     refreShouPaiPos : function(){
@@ -121,7 +121,7 @@ cc.Class({
         this.refreGangPai();
         this.refrePengPai();
         this.refreShouPaiPos();
-        this.refreCaiShenColor();
+        // this.refreCaiShenColor();
     },
 
     refreCaiShenColor : function(){
@@ -134,7 +134,7 @@ cc.Class({
             var bg   = main.getChildByName("bg");
             if(bg){
                 var isCaiShen = (item.pai && item.pai.id == caishenID)
-                var pColor    = isCaiShen ? new cc.Color(155, 255, 131) : new cc.Color(255, 255, 255);
+                var pColor    = isCaiShen ? GameDefine.CAISHENCOLOR : new cc.Color(255, 255, 255);
                 bg.color      = pColor
             }
         }
@@ -251,7 +251,7 @@ cc.Class({
         paiNode.setPosition(this.UIControl.getNewShowPaiPos(curPaiLen))
         this.paiListNode.addChild(paiNode, 99);
         this.addPaiNode = paiNode;
-        this.refreCaiShenColor();
+        // this.refreCaiShenColor();
     },
 
 
@@ -272,7 +272,7 @@ cc.Class({
             
         }, this))
         targetNode.runAction(action);
-        this.refreCaiShenColor();
+        // this.refreCaiShenColor();
     },
 
     sortMajiangAnim : function(pai){

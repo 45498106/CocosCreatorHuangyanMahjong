@@ -25,6 +25,8 @@ cc.Class({
     setInitFunc : function(){
         this.soundToggleNode.getChildByName("checkmark").active = UserLocalData.getSoundSwitch();
         this.musicToggleNode.getChildByName("checkmark").active = UserLocalData.getMusicSwitch();
+        cc.log("===== 音效开关 : ", UserLocalData.getSoundSwitch());
+        cc.log("===== 音乐开关 : ", UserLocalData.getMusicSwitch());
         this.btnStatusChanged(UserLocalData.getAudioKind());
     },
 
@@ -74,8 +76,28 @@ cc.Class({
         this.writeOffBtnNode.opacity = 150;
     },
 
-
-
+    //音效音乐开关设置
+    onBtnSoundMusicSet : function(event, num){
+        if(num === "sound"){
+            var mark = this.soundToggleNode.getChildByName("checkmark").active;
+            if(mark){
+                Audio.playSound();
+                UserLocalData.setSoundSwitch(true);
+            }else{
+                Audio.stopSound();
+                UserLocalData.setSoundSwitch(false);
+            }
+        } else {
+            var mark = this.musicToggleNode.getChildByName("checkmark").active;
+            if(mark){
+                Audio.playMusic();
+                UserLocalData.setMusicSwitch(true);
+            }else{
+                Audio.stopMusic();
+                UserLocalData.setMusicSwitch(false);
+            }
+        }
+    },
 
     //以下是关闭按钮执行函数
     onBtnCloseLanguageClicked : function(){

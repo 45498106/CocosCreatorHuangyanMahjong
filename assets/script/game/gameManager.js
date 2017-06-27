@@ -257,7 +257,7 @@ GameManager.hideAllReadyNode = function(){
 }
 
 GameManager.checkPaiData = function(){
-	if(!this.startPaiData || !this.meDirection){
+	if(!this.startPaiData || !this.meDirection || !this.CaiShenPai){
 		return;		
 	}
 	this.bindUserDirection();
@@ -321,6 +321,7 @@ GameManager.caiShengPai = function(data){
 		var player = this.playerList[k];
 		player.refreCaiShenColor();
 	}
+	this.checkPaiData();
 }
 
 //玩家出牌

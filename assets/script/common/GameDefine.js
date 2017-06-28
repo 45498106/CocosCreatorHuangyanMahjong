@@ -104,9 +104,9 @@ GameDefine.GAME_TYPE = {
 //胡数 localText
 GameDefine.HSTEXT = {
         dh :"底胡",
-        dz :"本门风对子",
-        yk :"硬张刻子",
-        rk :"软张刻子",
+        dz :"门风对",
+        yk :"硬张刻",
+        rk :"软张刻",
         yak :"硬张暗刻",
         rak :"软张暗刻",
         ymg  :"硬张明杠",
@@ -121,16 +121,32 @@ GameDefine.HSTEXT = {
 
 GameDefine.FSTEXT = {
 	//翻数，未胡牌/已胡牌翻数
-    zfbk :"中发白刻子",
+    zfbk :"中发白刻",
     zfbg :"中发白杠",
-    sfk :"本门风刻子",
-    sfg :"本门风杠",
+    sfk :"门风刻",
+    sfg :"门风杠",
     //翻数，已胡牌翻数
     wcs :"无财神",
     cshy :"财神还原",
     hys :"混一色",
     qys :"清一色",
-}
+}	 // ZIMOCOUNT 
+        // HUPAICOUNT
+        // LAZICOUNT
+        // BAOYUANCOUNT
+        // TIANHUCOUNT
+        // DIHUCOUNT
+        // XIANGDUIHUSU
+        // ZHANJIINFOCOUNT
+GameDefine.TOTALREPORT = [
+	"自摸次数:",
+	"胡牌次数:", 
+	"辣子次数:",
+	"包圆次数:",
+	"天胡次数:",
+	"地胡次数:",
+	"总战绩:",
+];
 
 GameDefine.CAISHENCOLOR = new cc.Color(155, 255, 131);
 GameDefine.WHITECOLOR = new cc.Color(255, 255, 255);

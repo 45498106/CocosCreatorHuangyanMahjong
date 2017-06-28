@@ -11,7 +11,6 @@ var GameManager     = {};
 GameManager.initGame = function(playerList, gameUICB){
 	this.playerList = playerList;
 	this.gameUICB   = gameUICB;
-	this.reportData = {};
 	this.init();
 }
 
@@ -40,13 +39,12 @@ GameManager.init = function(){
 	mmgr.addMessageCB(netList.MingGang2PaiAckMessageNum.netID, this.MingGang2PaiAckMessage, this);
 	mmgr.addMessageCB(netList.QiangGangReminderNum.netID, this.QiangGangReminder, this);
 	mmgr.addMessageCB(netList.QiangGangNoticeNum.netID, this.QiangGangNotice, this);
-	mmgr.addMessageCB(netList.QiangGangHuPaiAckMessageNum.netID, this.MingGang2PaiAckMessage, this);
+	mmgr.addMessageCB(netList.QiangGangHuPaiAckMessageNum.netID, this.ZiMoHuPaiAckMessage, this);
 	mmgr.addMessageCB(netList.MingGang1PaiAckMessageNum.netID, this.MingGang1PaiAckMessage, this);
 	mmgr.addMessageCB(netList.AnGangPaiAckMessageNum.netID, this.AnGangPaiAckMessage, this);
 	mmgr.addMessageCB(netList.ZiMoHuPaiAckMessageNum.netID, this.ZiMoHuPaiAckMessage, this);
 	mmgr.addMessageCB(netList.MoPaiZuHeReminderNum.netID, this.MoPaiZuHeReminder, this);
 	mmgr.addMessageCB(netList.RestoreListenReminderNum.netID, this.RestoreListenReminder, this);
-	// this.startEnd();
 }
 
 GameManager.onDestroy  = function(){
@@ -472,6 +470,7 @@ GameManager.ChuPaiZuHeNotice = function(data){
 		eatType === GameDefine.EAT_TYPE[6]){
 		player.gang(data.Atile, false, eatType);
 	}
+	this.lastChuPaiData = data;
 }
 
 //吃牌的 ACK
@@ -527,96 +526,37 @@ GameManager.turnToNextPlayer = function(player){
 }
 
 //抢杠提示
-GameManager.QiangGangReminder = function(data){
+GameManager.QiangGangReminder = function(){
 	this.eatTag     = "QiangGang";
+	var data        = {};
+	data.Atile      = this.lastChuPaiData.Atile;
+	data.Opts       = 1;
 	this.eatPaiData = data;
 	this.gameUICB.showQiangGang();
 }
 
 GameManager.QiangGangNotice = function(data){
+	log("--GameManager.QiangGangNotice----", data)
 	data.Opts = 1;
 	this.ChuPaiZuHeNotice(data);
 }
 
 GameManager.RestoreListenReminder = function (data) {
-	log("-----RestoreListenReminder------------")
 	this.gameUICB.cleanEatUI();
 }
 
 /*  结算战绩  */
 GameManager.ZhanJiNotice = function(data){
-	log("-----data", data);
-	for(let i =0; i<4; i++){
-		var resultData    = data.info[i];
-		var deskType      = this.getDeskTypeByPos(i);
-		resultData.player = this.playerList[deskType];
-	}
-	this.reportData.roudReady = true;
 	this.gameUICB.showSingleReport(data);
 }
 
 GameManager.TotalZhanJiNotice = function(data){
-	/*
-	this.reportData.totalRoundReport = data.HuSus;
-	this.reportData.totalReady = true;
-	this.showRoundReport();*/
-},
-
-GameManager.showRoundReport = function(){
-	if(this.reportData.totalReady && this.reportData.roudReady){
-		this.reportData.roudReady = false;
-		this.reportData.totalReady = false;
-		var nameList  = [];
-		for(let i = 0; i < 4; i ++){
-			var deskType = this.getDeskTypeByPos(i);
-			var player   = this.playerList[deskType];
-			var UserId   = player.playerData.UserId;
-			nameList.push(UserId);
-		}
-		this.gameUICB.showRoundReport(this.reportData, nameList);
-	}
+	this.gameUICB.setTotalReport(data);
 }
 
-GameManager.startEnd = function(){
-	var self = this;
-	var data = {"info":[{"ishu":true,"iszm":false,"islz":false,"isby":false,"isth":false,"isdh":false,"hp":11,"sp":[11,11,29,28,39,39,15],"zhp":[[31,32,33],[53,53,53],[],[]],"jdhs":22,"xdhs":66,"pxdhs":{"1":22,"2":22,"3":22},"hsxq":{"dh":10,"yak":8,"yk":4}},{"ishu":false,"iszm":false,"islz":false,"isby":false,"isth":false,"isdh":false,"hp":0,"sp":[14,26,29,28,26,27,37,38,35,38,51,51,43],"zhp":[[],[],[],[]],"jdhs":0,"xdhs":-30,"pxdhs":{"0":-22,"2":-4,"3":-4},"hsxq":{}},{"ishu":false,"iszm":false,"islz":false,"isby":false,"isth":false,"isdh":false,"hp":0,"sp":[17,14,13,13,28,22,27,22,21,26],"zhp":[[],[41,41,41],[],[]],"jdhs":8,"xdhs":-18,"pxdhs":{"0":-22,"1":4,"3":0},"hsxq":{"yk":4,"zfbk":1}},{"ishu":false,"iszm":false,"islz":false,"isby":false,"isth":false,"isdh":false,"hp":0,"sp":[16,14,16,24,21,23,27,39,39,15],"zhp":[[],[],[12,12,12,12],[]],"jdhs":8,"xdhs":-18,"pxdhs":{"0":-22,"1":4,"2":0},"hsxq":{"rmg":8}}]};
-	setTimeout(function(){
-		for(let i =0; i<4; i++){
-			var resultData    = data.info[i];
-			var player = {};
-			player.playerData = {};
-			player.playerData.UserId = i;
-			player.playerData.Name = "bitch";
-			player.direction = i;
-			player.IsSelfPlayer = (i=== 3);
-			player.paiDataObj = {};
-			player.paiDataObj.pengGangPai = {};
-			var gang = [];
-			for(let i = 0; i<1; i++){
-				gang[i] = [];
-				for(let k = 0; k<4; k++){
-					gang[i].push({id:13, rotate : 0});
-				}
-				
-			}
-			gang[0][3].rotate = 90;
-			var peng = [];
-			for(let i = 0; i<2; i++){
-				peng[i] = [];
-				for(let k = 0; k<3; k++){
-					peng[i].push({id:12, rotate : 0});
-				}
-			}
-			peng[0][0].rotate = -90;
-			peng[1][2].rotate = 90;
-			player.paiDataObj.pengGangPai.gang = gang;
-			player.paiDataObj.pengGangPai.peng = peng;
-			resultData.player = player;
-
-		}
-		self.reportData.roudReady = true;
-		self.gameUICB.showSingleReport(data);
-	}, 1000)
+GameManager.getPlayerByDeskPos = function(pos){
+	var deskType = this.getDeskTypeByPos(pos);
+	return this.playerList[deskType];
 }
 
 

@@ -327,35 +327,34 @@ cc.Class({
         }
     },
 
-    cleanEatUI : function(){
-        log("-cleanEatUI-----")
-        this.hideEatPaiN();
-    },
-
     //显示抢杠提示
     showQiangGang : function(){
-        log("-eatList---", eatList)
         this.showEatPaiN();
-        var eatNode   = cc.instantiate(this.gangPaiPrefab); 
+        var eatNode   = cc.instantiate(this.hupaiPrefab); 
         var eatObj    = {}
-        eatobj.cb     = this.onBtnEatChilcked;
-        eatobj.msName = "QiangGangMessageNum"
+        eatObj.cb     = this.onBtnEatChilcked;
+        eatObj.msName = "QiangGangMessageNum"
         this.eatOptN.addChild(eatNode);
-        eatNode.setPosition(cc.p(1 * -200 - 80, 0));
+        eatNode.setPosition(cc.p(-280, 0));
         eatNode.getComponent("btnChiUI").init(this, eatObj);
         this.addEatNodeList.push(eatNode);
     },
 
-
-    //显示结算信息
-    showRoundReport : function(reportData, nameList) {
-        this.EndUI.getComponent("endUI").showRoundReport(reportData, nameList);
+    cleanEatUI : function(){
+        this.hideEatPaiN();
     },
+
+    
+
 
     //show curent round report data
     showSingleReport : function(reportData){
         this.EndUI.getComponent("endUI").setSingleReportData(reportData, this);
         this.EndUI.getComponent("endUI").showSingleReport();
     },
+
+    setTotalReport : function(reportData){
+           this.EndUI.getComponent("endUI").setTotalReportData(reportData, this);
+    }
 
 });

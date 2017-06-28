@@ -68,6 +68,7 @@ playerCls.prototype.init = function(playerUI, desPosType, gameUI){
         this.chuPai = this.selfChuPai;
     }
     this.IsSelfPlayer = (this.desPosType === GameDefine.DESKPOS_TYPE.XIA);
+    // this.testPos();
 }
 
 //设置开局发的牌
@@ -119,7 +120,7 @@ playerCls.prototype.testPos = function(){
         self.playerUI.newRoundPaiAnim(self.paiDataObj);
         self.playerUI.pengGangPaiUI(self.paiDataObj);
     }, 1000);
-    // this.playerUI.pengGangPaiUI(this.paiDataObj);
+    this.playerUI.pengGangPaiUI(this.paiDataObj);
 }
 
 playerCls.prototype.getPaiObj = function(id){

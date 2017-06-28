@@ -89,6 +89,7 @@ cc.Class({
                 paiChildN   = this.createPaiNode(pai)
                 this.paiListNode.addChild(paiChildN);
             }
+            paiChildN.isHandPai = true;
             paiChildN.setPosition(this.UIControl.getShouPaiPos(k));
             paiChildN.setLocalZOrder(this.UIControl.getShouZorder(k));
         }
@@ -211,6 +212,7 @@ cc.Class({
                         this.UIControl.pengGangScale);
                     paiNode.isPengGangFrame = true;
                 }
+                paiNode.isHandPai = false;
                 paiNode.setLocalZOrder(this.UIControl.getZorder(grounpIndex, index));
                 paiNode.setPosition(this.UIControl.getGangPos(grounpIndex, index));
             }
@@ -238,6 +240,7 @@ cc.Class({
                         this.UIControl.pengGangScale);
                     paiNode.isPengGangFrame = true;
                 }
+                paiNode.isHandPai = false;
                 paiNode.setLocalZOrder(this.UIControl.getZorder(grounpIndex, index));
                 paiNode.setPosition(this.UIControl.getPengPos(grounpIndex, index))
             }
@@ -246,12 +249,12 @@ cc.Class({
 
     //摸牌
     addPai : function(pai){
-        var curPaiLen   = this.paiObjData.shouShangPai.length;
-        var paiNode     = this.createPaiNode(pai);
-        paiNode.setPosition(this.UIControl.getNewShowPaiPos(curPaiLen))
+        var curPaiLen     = this.paiObjData.shouShangPai.length;
+        var paiNode       = this.createPaiNode(pai);
+        paiNode.setPosition(this.UIControl.getShouPaiPos(curPaiLen - 0.5))
         this.paiListNode.addChild(paiNode, 99);
-        this.addPaiNode = paiNode;
-        // this.refreCaiShenColor();
+        this.addPaiNode   = paiNode;
+        paiNode.isHandPai = true;
     },
 
 
@@ -272,22 +275,11 @@ cc.Class({
             
         }, this))
         targetNode.runAction(action);
+        targetNode.isHandPai = false;
         // this.refreCaiShenColor();
     },
 
     sortMajiangAnim : function(pai){
-        //摸的牌就是打的牌
-        /*
-        if(pai.udid === this.addPaiUdid){return}
-        if( GameDefine.DESKPOS_TYPE.XIA !== this.deskType){return}
-        var targetData  = this.setPaiNewPos();
-        if(targetData && this.addPaiNode){
-            var oldAction = cc.moveTo(this.paiOldctTime, targetData.pos)
-            var act       = this.UIControl.getNewMoveAction(targetData.pos, this.addPaiNode.getPosition())
-            this.addPaiNode.runAction(cc.sequence(act, cc.callFunc(function(){
-                this.addPaiNode.setLocalZOrder(targetData.zOrder);
-            }, this)));
-        }*/
     },
 
 //     setPaiNewPos(){
@@ -348,7 +340,7 @@ cc.Class({
         //不是该你出牌
         if( !(this.player.dapaiStatus === GameDefine.PLAYERSTATUS.DAING)){return}
         //不是手上的牌
-        if(paiNode.isPengGangFrame){return}
+        if(!paiNode.isHandPai){return}
         if(!this.lastPaiNode){
             this.lastPaiNode = paiNode;
             paiNode.y += this.outPaiDis;

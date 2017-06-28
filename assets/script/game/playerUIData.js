@@ -10,6 +10,26 @@ var getDisTime = function(newPos, curPos){
 
 /////////////////////////////// start  //////////////////////////////////////////////////////////
 
+var UIControlData = function(){
+    this.GangLen     = 0;
+    this.PengLen     = 0;
+    this.getPengPos = function(gIndex, index){
+        return this.PengPos[gIndex +"+"+ index];
+    }
+    this.getGangPos = function(gIndex, index){
+        return this.GangPos[gIndex +"+"+ index];
+    }
+    this.getZorder  = function(gIndex, index){
+        return gIndex * 10 + parseInt(index) + 1;
+    }
+    this.getShouZorder = function(index){
+        return 50 + parseInt(index);
+    }
+}
+
+
+
+
 /////////////////////////////// 上方玩家 //////////////////////////////////////////////////////////
 
 var shangControl = function(){
@@ -346,32 +366,6 @@ var youControl = function(){
 
 
 /////////////////////////////// 下方玩家 //////////////////////////////////////////////////////////
-
-
-var UIControlData = function(){
-    this.GangLen     = 0;
-    this.PengLen     = 0;
-    this.getPengPos = function(gIndex, index){
-        return this.PengPos[gIndex +"+"+ index];
-    }
-    this.getGangPos = function(gIndex, index){
-        return this.GangPos[gIndex +"+"+ index];
-    }
-    this.getZorder  = function(gIndex, index){
-        return gIndex * 10 + parseInt(index) + 1;
-    }
-    this.getShouZorder = function(index){
-        return 50 + parseInt(index);
-    }
-}
-
-
-
-
-
-
-
-
 var xiaControl = function(){
     this.nodeScale     = 0.88;
     this.paiEndSacale  = 0.7;

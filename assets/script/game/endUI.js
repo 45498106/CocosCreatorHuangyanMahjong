@@ -1,5 +1,6 @@
 var utils      = require("utils");
 var GameDefine = require("GameDefine");
+var gameManager= require("gameManager");
 var log        = utils.log;
 cc.Class({
     extends: cc.Component,
@@ -7,6 +8,7 @@ cc.Class({
     properties: {
         endRoundN    : cc.Node,
         singleRoundN : cc.Node,
+        totalRoundN  : cc.Node,
         paiPrefab    : cc.Prefab,
         reportTagPb  : cc.Prefab,
     },
@@ -15,10 +17,14 @@ cc.Class({
     onLoad: function () {
         this.initDirectData();
         this.initSingleReport();
+        this.initTotalReporte();
         this.paiScale     = 0.62;
         this.shuWidth     = 32;
         this.hengWidth    = 41;
-        this.huPaiScale   = 0.6;        
+        this.huPaiScale   = 0.6;
+        this.endRoundN.active    = false;
+        this.singleRoundN.active = false;
+        this.totalRoundN.active  = false;        
     },
 
     initDirectData : function(){
@@ -31,28 +37,58 @@ cc.Class({
         this.directNodeName             = directNodeName;
     },
 
+    initTotalReporte : function(){
+        var self = this;
+        
+        this.totalRoundN.refreshData = function(data){
+            var maxWinCount = 0;
+            var maxWinerNode; 
+            for(let i=0;i<4;i++){
+                var itemData = data[i];
+                var playerNode = self.totalRoundN.getChildByName("player_"+i);
+                self.setPlayerInfo(playerNode, i)
+                var detailN = playerNode.getChildByName("detail")
+                for(let k = 0; k<6;k++){
+                    let itemNode    = detailN.getChildByName("item_"+k);
+                    var nameNode    = itemNode.getChildByName("name");
+                    var contentNode = itemNode.getChildByName("content");
+                    nameNode.getComponent(cc.Label).string = GameDefine.TOTALREPORT[k];
+                    contentNode.getComponent(cc.Label).string = itemData[k];
+                }
+                var scoreAddNode = playerNode.getChildByName("score_add");
+                var scoreRedNode = playerNode.getChildByName("score_red");
+                var disScore     = itemData[6] > 0 ? "+" + itemData[6] : itemData[6];
+                scoreAddNode.getComponent(cc.Label).string = disScore;
+                scoreRedNode.getComponent(cc.Label).string = disScore;
+                scoreAddNode.active = itemData[6] > 0;
+                scoreRedNode.active = !(itemData[6] > 0);
+                var winerNode  = playerNode.getChildByName("winer");
+                winerNode.active = false;
+                if(itemData[6] > maxWinCount){
+                    maxWinCount = itemData[6];
+                    maxWinerNode = winerNode;
+                }
+            }
+            maxWinerNode.active = true;
+        }
+    },
+
     initSingleReport : function(){
         var self = this;
         this.singleRoundN.refreshData = function(data){
             for(let i= 0; i < 4; i++){
                 let playerNode = self.singleRoundN.getChildByName("player_"+i);
                 let itemData   = data[i];
-                let iconN      = playerNode.getChildByName("icon");
-                iconN.getComponent(cc.Label).string = itemData.player.playerData.UserId;
-                let nameN = playerNode.getChildByName("name");
-                nameN.getComponent(cc.Label).string = itemData.player.playerData.Name
-                let paiListN = playerNode.getChildByName("paiList");
-                let dirNode  = playerNode.getChildByName("direct");
+                let paiListN   = playerNode.getChildByName("paiList");
+                let dirNode    = playerNode.getChildByName("direct");
+                self.setPlayerInfo(playerNode, i)
                 self.setDirectData(dirNode, i);
-                playerNode.getChildByName("bg_1").active = !itemData.player.IsSelfPlayer;
-                playerNode.getChildByName("bg_2").active = itemData.player.IsSelfPlayer;
-
                 self.setHuCountData(playerNode, itemData);
-                self.setPaiData(paiListN, itemData);
+                self.setPaiData(paiListN, itemData, i);
                 self.setPaiFengScore(playerNode, itemData, i); 
                 self.setFanAndHuCount(playerNode, itemData);
                 self.setReportTag(paiListN, itemData);
-
+                playerNode.getChildByName("byTips").active = itemData.isby;
             }
         }
         this.singleRoundN.cleanData = function(){
@@ -64,12 +100,24 @@ cc.Class({
         }
     },
 
+    //player base info, icon/name/direction
+    setPlayerInfo : function(playerNode, pos){
+        var playerInfo = gameManager.getPlayerByDeskPos(pos)
+        let iconN = playerNode.getChildByName("icon");
+        iconN.getComponent(cc.Label).string = playerInfo.playerData.UserId;
+        let nameN = playerNode.getChildByName("name");
+        nameN.getComponent(cc.Label).string = playerInfo.playerData.Name
+        playerNode.getChildByName("bg_1").active = !playerInfo.IsSelfPlayer;
+        playerNode.getChildByName("bg_2").active = playerInfo.IsSelfPlayer;
+        
+    },
+
     //hupai  dianpao  baoyuan lazi
     setReportTag : function(paiListN, data){
-        var leftPos = cc.p(-86, -10);
+        var leftPos  = cc.p(-86, -10);
         var rightPos = cc.p(690, -10);
-        var self = this;
-        var addTag = function(pos, showTagName){
+        var self     = this;
+        var addTag   = function(pos, showTagName){
             var tagNode = cc.instantiate(self.reportTagPb);
             paiListN.addChild(tagNode);
             tagNode.setPosition(pos);
@@ -85,10 +133,10 @@ cc.Class({
             addTag(rightPos, "lazi");
         }
         if(data.isby){
-            addTag(rightPos, "by");
+            addTag(leftPos, "by");
         }
         if(!data.isby && data.isdp){
-            addTag(rightPos, "dp");
+            addTag(leftPos, "dp");
         }
 
     },
@@ -139,8 +187,9 @@ cc.Class({
         dirNode.getChildByName(nodeName).active = true;
     },
     //set current player pai data
-    setPaiData : function(paiListNode, data) {
-        var pengGangPai = data.player.paiDataObj.pengGangPai;
+    setPaiData : function(paiListNode, data, pos) {
+        var player = gameManager.getPlayerByDeskPos(pos)
+        var pengGangPai = player.paiDataObj.pengGangPai;
         var shouPai     = data.sp;
         shouPai.sort();
         //every player's pai display as like xia player  
@@ -212,7 +261,6 @@ cc.Class({
 
     //和其他风玩家的分数
     setPaiFengScore : function(playerNode, data, pIndex){
-        log("setPaiFengScore", playerNode, data)
         var addColor    = new cc.Color(255, 255, 0);
         var reduceColor = new cc.Color(100, 255, 237);
         var playerFengData = [];
@@ -245,6 +293,10 @@ cc.Class({
         this.singleRoundN.cleanData();
     },
 
+    showTotalReporte : function(){
+        this.totalRoundN.active = true;
+    },
+
     
 
     //cur round report data
@@ -253,43 +305,42 @@ cc.Class({
         this.singleRoundN.refreshData(reportData.info);
     },
 
-    //显示结算信息
-    showRoundReport : function(reportData, nameList) {
-        this.endRoundN.active = true;
-        var pointN    = this.endRoundN.getChildByName("pointList");
-        var nameNode  = pointN.getChildByName("id");
-        var totalNode = pointN.getChildByName("total");
-        var curNode   = pointN.getChildByName("cur");
-        var btnReady  = this.endRoundN.getChildByName("btnReady");
-        var btnOut    = this.endRoundN.getChildByName("btnOut");
-        reportData.endPlayCount = 0;
-        btnOut.active = reportData.endPlayCount < 1;
-        btnReady.active = reportData.endPlayCount > 0;
-        var setData = function(index, data, parentNode){
-            var setN = parentNode.getChildByName("point_" + index);
-            setN.getComponent(cc.Label).string = data;
-        }
-        for(let i =1; i<5; i++){
-            // setData(i, reportData.totalRoundReport[i-1], totalNode);
-            // setData(i, reportData.curRoundReport[i-1], curNode);
-            // setData(i, nameList[i-1], nameNode);
-        }
+    setTotalReportData : function(reportData, gameUI){
+        this.gameUI          = gameUI;
+        this.totalReportData = reportData; 
+        this.totalRoundN.refreshData(reportData.TotalInfos);
     },
 
-
-    onBtnReadyToPlay : function () {
+    onBtnExitClicked : function () {
         cc.director.loadScene("main");
     },
 
-    onBtnEndToPlay : function () {
+    //share single report to other
+    onBtnSingleShare : function () {
+        
+    },
+
+    //share total report to other
+    onBtnTotalShare : function () {
         
     },
 
     onBtnContiuneClicked : function(){
         this.hideSingleReport();
+        if(this.isCanContinue()){
+            this.gotoReadyUI();
+        }else {
+            this.showTotalReporte();
+        }
     },
 
+    gotoReadyUI : function(){
 
+    },
 
+    //是否还能继续打牌
+    isCanContinue : function(){
+        return (this.totalReportData === undefined);
+    },
    
 });

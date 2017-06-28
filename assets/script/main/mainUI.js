@@ -46,14 +46,14 @@ var mainUI = cc.Class({
     onDeviceFunc : function(){
         var ua = navigator.userAgent.toLowerCase();
         if(/iphone|ipad|ipod/.test(ua)){
-            log("=== 这是ios设备. ===");
+            log("=== 这是ios设备 ===");
         } else if(/android/.test(ua)){
-            log("=== 这是android设备. ===");
+            log("=== 这是android设备 ===");
             jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity", "test", "(Ljava/lang/String;)V", "cocos creator.");
             var result = jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity", "returnJsSum", "(I)I", 3);
             log("===== result", result);
         }else{
-            log("=== 这是windows设备. ===");
+            log("=== 这是开发设备 ===");
         }
     },
     //想服务器请求公告信息
@@ -273,6 +273,11 @@ var mainUI = cc.Class({
     //监听系统活动公告消息
     onGetAnnouncementAck : function(data){
         this.webview.url = data.addId[0].addr;
+    },
+
+    //监听手机验证码消息
+    onGetVerificationCodeAck : function(data){
+        this.node.parent.getChildByName("setUI").getComponent("setUI").getCodeByNet("0000");
     },
 
     //--------------End Server ----------------

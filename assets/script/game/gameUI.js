@@ -19,13 +19,13 @@ cc.Class({
         lunpanN           : cc.Node, //中间的东南西北
         overallEffN       : cc.Node, //全局特效
         eatOptN           : cc.Node,
-        chiPaiPrefab      : cc.Prefab,
-        pengPaiPrefab     : cc.Prefab,
-        gangPaiPrefab     : cc.Prefab,
-        hupaiPrefab       : cc.Prefab,
+        paiOptsPrefab     : cc.Prefab,
         EndUI             : cc.Node,
         eatPaiDetailPrefab: cc.Prefab,
         eatMoreOptN       : cc.Node,
+        votingNode        : cc.Node, //voting leave room;
+        alertPrefab       : cc.Prefab, //alert tips
+        popWindowN        : cc.Node,
     },
 
     // use this for initialization
@@ -71,12 +71,11 @@ cc.Class({
 
     //设置手上牌图像资源
     setHandPaiSprite : function(paiNode, deskType, paiID, nodeScale){
-        var bgFrameName = "pj_shou"+deskType;
+        var bgFrameName = this.getShouPaiBgFrame(deskType, paiID);
         var mainNode    = paiNode.getChildByName("main")
         var bgNode      = mainNode.getChildByName("bg");
         var bgRect      = this.setNodeSprite(bgNode, bgFrameName);
         if(deskType === GameDefine.DESKPOS_TYPE.XIA){
-            this.checkCaiShenBG(bgNode, paiID);
             var contentNode  = mainNode.getChildByName("content");
             var contentName  = "pj_"+utils.getLocalPaiID(paiID);
             this.setNodeSprite(contentNode, contentName);
@@ -98,16 +97,18 @@ cc.Class({
         return frameRect;
     },
 
-    getBgFreme : function(deskType, isShangXia, isRotate){
+
+    getPengGangBgFreme : function(deskType, isShangXia, isRotate, paiID){
         var isZhipeng        = ((isShangXia && !isRotate) || (!isShangXia && isRotate))
         var bgFrameName      = isZhipeng ? "pj_zhipeng" : "pj_hengpeng";
+        bgFrameName = gameManager.isCaiShenPai(paiID) ? bgFrameName + "_c" : bgFrameName;
         return bgFrameName;
     },
 
-    checkCaiShenBG : function(bgNode, paiID){
-        var caishenID  = require("gameManager").CaiShenPai;
-        var paiColor   = caishenID === paiID ? GameDefine.CAISHENCOLOR : GameDefine.WHITECOLOR
-        bgNode.color   = paiColor;
+    getShouPaiBgFrame : function(deskType, paiID){
+        var bgFrameName = "pj_shou"+deskType;
+        bgFrameName = gameManager.isCaiShenPai(paiID) ? bgFrameName + "_c" : bgFrameName;
+        return bgFrameName;
     },
 
     //设置碰杠牌图像资源
@@ -117,9 +118,8 @@ cc.Class({
         var mainNode         = paiNode.getChildByName("main")
         var DeskTp           = GameDefine.DESKPOS_TYPE;
         var isShangXia       = (deskType === DeskTp.XIA || deskType === DeskTp.SHANG);
-        var bgFrameName      = this.getBgFreme(deskType, isShangXia, isRotate);
+        var bgFrameName      = this.getPengGangBgFreme(deskType, isShangXia, isRotate, paiID);
         var bgNode           = mainNode.getChildByName("bg");
-        this.checkCaiShenBG(bgNode, paiID);
         var bgRect           = this.setNodeSprite(bgNode, bgFrameName);
         var contentNode      = mainNode.getChildByName("content");
         var contentName      = "pj_"+utils.getLocalPaiID(paiID);
@@ -143,7 +143,6 @@ cc.Class({
     },
     //开始打麻将
     gameStart : function(){
-        this.changPlayerIcon(0.8);
         this.lunpanN.active = true;
     },
 
@@ -174,22 +173,24 @@ cc.Class({
         return directionN.getChildByName(curDirName);
     },
 
+    initVoting : function(){
+        this.votingNode.active = false;
+        var self = this;
+        this.votingNode.refreshData = function(data){
+
+        }
+    },
+
+    showVoting : function(data){
+        this.votingNode.active = true;
+        this.votingNode.refreshData(data);
+    },
+
     showReadyNode : function(){
         this.lunpanN.active = false;
         var readyScript = this.readyLogicN.getComponent("readyUI");
         readyScript.refreReadyData();
         readyScript.showIn();
-    },
-
-    //放大缩小玩家icon
-    changPlayerIcon : function(tarScale){
-        var changeFunc = function(tarNode){
-            tarNode.getChildByName("info").scale    = tarScale;
-        }
-        changeFunc(this.shangPaiN);
-        changeFunc(this.xiaPaiN);
-        changeFunc(this.zuoPaiN);
-        changeFunc(this.youPaiN);
     },
 
     //播放生牌阶段特效
@@ -208,9 +209,18 @@ cc.Class({
         content.runAction(act);
     },
 
+    //
+    onBtnBackClicked : function(){
+        gameManager.playerWantToOut();
+    },
+
+    //
+    onBtnSettingClicked : function(){
+        // this.showGameSetting();
+    },
+
     //过牌
     onBtnGuoChilcked : function(){
-        cc.log("-//过牌----")
         this.hideEatPaiN();
         gameManager.guoPaiToServer();
     },
@@ -251,14 +261,9 @@ cc.Class({
         this.hideEatPaiN();
         gameManager.eatPaiToServer(eatobj);
     },
-    cleanResidue : function(){
-        this.totalReduce = 0;
-    },
 
     //refresh the rest of pai count
-    refreResidue : function(reduce){
-        this.totalReduce += reduce;
-        var left = utils.getChannelInfo().totalPai - this.totalReduce;
+    refreResidue : function(left){
         this.reduceLabel.string = left;
     },
 
@@ -283,61 +288,40 @@ cc.Class({
 
     //初始化吃牌UI
     initEatListPrefab : function(){
-        this.EatPaiObj = {};
+        this.EatPaiObj = [];
         this.addEatNodeList = [];
-        var DEFINE_EAT = GameDefine.EAT_TYPE;
-        var self = this;
-        var initEat = function(defineIndex, prefab, chilckedCB, msName){
-            var key = DEFINE_EAT[defineIndex]
-            self.EatPaiObj[key]        = {};
-            self.EatPaiObj[key].prefab = prefab;
-            self.EatPaiObj[key].cb     = chilckedCB;
-            self.EatPaiObj[key].dataIndex = defineIndex;
-            self.EatPaiObj[key].msName = msName; //message Name
-        }
         this.hideEatPaiN();
-        //PuTongHu  = 0
-        //MingGang2 = 1
-        //PengPai   = 2
-        //ChiPai    = 3
-        //ZiMoHu    = 4
-        //AnGang    = 5
-        //MingGang1 = 6
-        initEat(0, this.hupaiPrefab, this.onBtnEatChilcked, "PuTongHuPaiMessageNum");
-        initEat(1, this.gangPaiPrefab, this.onBtnEatChilcked, "MingGang2PaiMessageNum");
-        initEat(2, this.pengPaiPrefab, this.onBtnEatChilcked, "PengPaiMessageNum");
-        initEat(3, this.chiPaiPrefab, this.onBtnChiChilcked, "ChiPaiMessageNum");
-        initEat(4, this.hupaiPrefab, this.onBtnEatChilcked, "ZiMoHuPaiMessageNum");
-        initEat(5, this.gangPaiPrefab, this.onBtnEatChilcked, "AnGangPaiMessageNum");
-        initEat(6, this.gangPaiPrefab, this.onBtnEatChilcked, "MingGang1PaiMessageNum");
+        var self = this;
+        //PuTongHu  = 0 //MingGang2 = 1 //PengPai   = 2
+        //ChiPai    = 3 //ZiMoHu    = 4 //AnGang    = 5
+        //MingGang1 = 6 //QiangGang = 7 //guo       = 8 
+        var creatEatList = function(cb, msName, listIndex){
+            var eatObj = {cb : cb, msName : msName, dataIndex : listIndex};
+            self.EatPaiObj[listIndex] = eatObj;
+        }
+        creatEatList(this.onBtnEatChilcked, "PuTongHuPaiMessageNum", 0);
+        creatEatList(this.onBtnEatChilcked, "MingGang2PaiMessageNum", 1);
+        creatEatList(this.onBtnEatChilcked, "PengPaiMessageNum", 2);
+        creatEatList(this.onBtnChiChilcked, "ChiPaiMessageNum", 3);
+        creatEatList(this.onBtnEatChilcked, "ZiMoHuPaiMessageNum", 4);
+        creatEatList(this.onBtnEatChilcked, "AnGangPaiMessageNum", 5);
+        creatEatList(this.onBtnEatChilcked, "MingGang1PaiMessageNum", 6);
+        creatEatList(this.onBtnEatChilcked, "QiangGangMessageNum", 7);
+        creatEatList(this.onBtnGuoChilcked, "", 8);
     },
 
     // 显示玩家对当前牌局上打的牌的课操作列表
     showCanEatUI : function(eatList, optData){
-        log("-eatList---", eatList)
         this.showEatPaiN();
         for(let i = 0; i < eatList.length; i++){
-            var eatName = eatList[i];
-            var eatObj  = this.EatPaiObj[eatName];
-            var eatNode = cc.instantiate( eatObj.prefab ); 
+            var eatTag = eatList[i];
+            var eatObj  = this.EatPaiObj[eatTag];
+            var eatNode = cc.instantiate(this.paiOptsPrefab); 
             this.eatOptN.addChild(eatNode);
-            eatNode.setPosition(cc.p((i+1) * -200 - 80, 0));
-            eatNode.getComponent("btnChiUI").init(this, eatObj);
+            eatNode.setPosition(cc.p(i * -200 - 80, 100));
+            eatNode.getComponent("paiOptsUI").init(this, eatObj, eatTag);
             this.addEatNodeList.push(eatNode);
         }
-    },
-
-    //显示抢杠提示
-    showQiangGang : function(){
-        this.showEatPaiN();
-        var eatNode   = cc.instantiate(this.hupaiPrefab); 
-        var eatObj    = {}
-        eatObj.cb     = this.onBtnEatChilcked;
-        eatObj.msName = "QiangGangMessageNum"
-        this.eatOptN.addChild(eatNode);
-        eatNode.setPosition(cc.p(-280, 0));
-        eatNode.getComponent("btnChiUI").init(this, eatObj);
-        this.addEatNodeList.push(eatNode);
     },
 
     cleanEatUI : function(){
@@ -354,7 +338,16 @@ cc.Class({
     },
 
     setTotalReport : function(reportData){
-           this.EndUI.getComponent("endUI").setTotalReportData(reportData, this);
-    }
+        this.EndUI.getComponent("endUI").setTotalReportData(reportData, this);
+    },
+
+    showDissolved : function(cb){
+        var content   = "房间已经被解散";
+        var title     = ""
+        var alertNode = cc.instantiate(this.alertPrefab);
+        this.popWindowN.addChild(alertNode, -1);
+        alertNode.getComponent("alertUI").show(title, content, cb, cb);
+        var end = this.popWindowN.getChildByName("endRound");
+    },
 
 });

@@ -80,6 +80,7 @@ cc.Class({
             RoomInformation   : roomInfo,//房间信息
         }
         cc.log("send NetProtocolList", NetProtocolList)
+        require("GameDataMgr").setRoomMaster(true);
         NetMessageMgr.send(NetProtocolList.CreateRoomMessageNum.netID, sendData);
     },
 

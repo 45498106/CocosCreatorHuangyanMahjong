@@ -12,12 +12,10 @@ cc.Class({
     // use this for initialization
     onLoad: function () {
         this.paiListNode        = this.node.getChildByName("paiNode");
-        this.btnInvite          = this.node.getChildByName('btnInvite');
-        this.btnInvite.active   = false;
         this.playerInfoN        = this.node.getChildByName("info");
         this.playerInfoN.active = false;
-        this.btnInvite.on("touchend", this.onBtnInviteCliicked, this);
         this.playerInfoN.on("touchend", this.onPlayerInfoClicked, this);
+        this.waitN              = this.node.getChildByName("wait");
         this.readyTagN          = this.playerInfoN.getChildByName("status");
         this.zhuangN            = this.playerInfoN.getChildByName("zhuang");
         this.readyTagN.active   = false;
@@ -44,8 +42,8 @@ cc.Class({
 
     //刷新玩家的信息
     refreshPlayerData : function(playerData){
-        this.btnInvite.active   = !playerData;
-        this.playerInfoN.active = playerData;
+        this.playerInfoN.active = (playerData !== undefined);
+        this.waitN.active = (playerData === undefined);
         if(!playerData) {return};
         var nameNode = this.playerInfoN.getChildByName("name");
         nameNode.getComponent(cc.Label).string = playerData.Name;
@@ -282,27 +280,6 @@ cc.Class({
     sortMajiangAnim : function(pai){
     },
 
-//     setPaiNewPos(){
-//         var targetData;
-//         var shouPaiData = this.paiObjData.shouShangPai
-//         for (var k = 0; k < shouPaiData.length; k++) {
-//             let pai         = shouPaiData[k]
-//             var paiChildN   = this.paiListNode.getChildByName(pai.udid);
-//             let pos = this.UIControl.getShouPaiPos(k)
-//             let zOrder = parseInt(k) + 1
-//             if(this.addPaiUdid && this.addPaiUdid === pai.udid){
-//                 targetData = {};
-//                 targetData.pos = pos;
-//                 targetData.zOrder = zOrder;
-//             }else{
-//                 paiChildN.setPosition(pos);
-//                 paiChildN.setLocalZOrder(zOrder)
-//             }
-        
-//         }
-//         return targetData;
-//     },
-
     //设置打出去的牌最终去向
     setPaiEnd : function(isNoOneEat, paiDataObj, paiUdid){
         this.paiDataObj = paiDataObj;
@@ -321,10 +298,6 @@ cc.Class({
         targetNode.runAction(moveAct);
     },
 
-    //邀请玩家
-    onBtnInviteCliicked : function () {
-        
-    },
     //显示玩家详情
     onPlayerInfoClicked : function () {
           

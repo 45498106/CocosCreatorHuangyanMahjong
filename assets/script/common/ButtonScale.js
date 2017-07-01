@@ -2,7 +2,7 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-        pressedScale: 0.9,
+        pressedScale: 0.8,
         transDuration: 0.1
     },
 

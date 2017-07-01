@@ -9,16 +9,16 @@ var mainUI = cc.Class({
     extends: cc.Component,
 
     properties: {
-        canvasNode      : cc.Node, //场景节点
-        storeNode       : cc.Node, //商店
-        setNode         : cc.Node, //设置
-        enterRoomN      : cc.Node, //输入房间号码
-        testN           : cc.Node, //测试
-        newsNode        : cc.Node, //消息
-        zhanjiNode      : cc.Node, //战绩
-        craeteRoomNode  : cc.Node, //创建房间
-        bulletinNode    : cc.Node, //系统公告
-        activityNode    : cc.Node, //活动
+        canvasNode      : cc.Node,    //场景节点
+        storeNode       : cc.Node,    //商店
+        setPrefab       : cc.Prefab,  //设置
+        enterRoomN      : cc.Node,    //输入房间号码
+        testN           : cc.Node,    //测试
+        newsNode        : cc.Node,    //消息
+        zhanjiNode      : cc.Node,    //战绩
+        craeteRoomNode  : cc.Node,    //创建房间
+        bulletinNode    : cc.Node,    //系统公告
+        activityNode    : cc.Node,    //活动
         webview         : cc.WebView, //活动网址
     },
 
@@ -28,7 +28,7 @@ var mainUI = cc.Class({
         this.regisgerNetMessage();
         this.refreUserID();
 
-        this.onDeviceFunc();
+        // this.onDeviceFunc();
         this.getAnnouncementNum();
 
         Audio.playMusic("back.mp3");
@@ -56,7 +56,7 @@ var mainUI = cc.Class({
             log("=== 这是开发设备 ===");
         }
     },
-    //想服务器请求公告信息
+    //向服务器请求公告信息
     getAnnouncementNum : function(){
         var ScrollNewsID = {};
         ScrollNewsID.id = [];
@@ -83,7 +83,10 @@ var mainUI = cc.Class({
 
     //进入设置
     onBtnSetClicked : function(){
-        this.actionFunc(this.setNode);
+        // this.actionFunc(this.setNode);
+
+        // var setPrefab = cc.instantiate(this.setPrefab);
+        // this.canvasNode.addChild(setPrefab);
     },
 
     //进入消息
@@ -93,7 +96,7 @@ var mainUI = cc.Class({
 
     //进入战绩
     onBtnZhanjiClicked : function(){
-        this.actionFunc(this.zhanjiNode);
+        // this.actionFunc(this.zhanjiNode);
     },
 
     //创建房间
@@ -183,7 +186,7 @@ var mainUI = cc.Class({
         //输入房间号码放回的信息
         NetMessageMgr.addMessageCB(NetProtocolList.EnterRoomAckMessageNum.netID, 
             this.onRoomMessageAck, this)
-        // 创建房间返回的信息
+        //创建房间返回的信息
         NetMessageMgr.addMessageCB(NetProtocolList.CreateRoomAckMessageNum.netID, 
             this.onCreatRoomAck, this)
         //系统滚动公告信息
@@ -192,6 +195,9 @@ var mainUI = cc.Class({
         //系统活动公告信息
         NetMessageMgr.addMessageCB(NetProtocolList.GetAnnouncementAckNum.netID, 
             this.onGetAnnouncementAck, this)
+        //查看战绩返回的信息
+        NetMessageMgr.addMessageCB(NetProtocolList.QueryPanZhanJiAckMessageNum.netID,
+            this.onQueryPanZhanJiAck, this)
     },
 
     unRegisgerNetMessage : function(){
@@ -203,6 +209,8 @@ var mainUI = cc.Class({
             this.onGetScrollNewsAck)
         NetMessageMgr.rmMessageCB(NetProtocolList.GetAnnouncementAckNum.netID,
             this.onGetAnnouncementAck)
+        NetMessageMgr.rmMessageCB(NetProtocolList.QueryPanZhanJiAckMessageNum.netID,
+            this.onQueryPanZhanJiAck, this)
     },
 
     sendRoomNumToServer : function () {
@@ -216,6 +224,7 @@ var mainUI = cc.Class({
             PlayerID : GameDataMgr.getUserID(),//玩家帐号
             RoomID   : roomID,//房间id
         }
+        require("GameDataMgr").setRoomMaster(false);
         NetMessageMgr.send(NetProtocolList.EnterRoomMessageNum.netID, sendData);
     },
 
@@ -239,18 +248,15 @@ var mainUI = cc.Class({
         log("-onRoomMessageAck---", data)
         data.RoomInformation.RoomID = GameDataMgr.getRoomInfo().RoomID;
         GameDataMgr.setRoomInfo(data.RoomInformation);
-        GameDataMgr.setRoomPlayers(data.PlayersInfo);
+        GameDataMgr.initRoomPlayers(data.PlayersInfo);
         this.gotoGameRoom();
     },
-
     //创建房间信息
     onCreatRoomAck : function(data){
         log("-onCreatRoomAck-创建房间信息--", data)
-        var roomInfo = GameDataMgr.getRoomInfo();
-        var PlayersInfo = GameDataMgr.getRoomPlayers();
-        PlayersInfo.push(data.PlayerInfo)
-        GameDataMgr.setRoomPlayers(PlayersInfo);
-        roomInfo.RoomID = data.RoomID;
+        GameDataMgr.getRoomInfo().RoomID = data.RoomID;       
+        var playInfoList = [data.PlayerInfo];
+        GameDataMgr.initRoomPlayers(playInfoList);
         this.gotoGameRoom();
     },
 
@@ -272,13 +278,24 @@ var mainUI = cc.Class({
 
     //监听系统活动公告消息
     onGetAnnouncementAck : function(data){
-        this.webview.url = data.addId[0].addr;
+        if(data != undefined)
+            this.webview.url = data.addId[0].addr;
+        else
+            this.webview.url = "https://www.baidu.com/";
     },
 
     //监听手机验证码消息
     onGetVerificationCodeAck : function(data){
         this.node.parent.getChildByName("setUI").getComponent("setUI").getCodeByNet("0000");
     },
+
+    //查看战绩返回信息
+    onQueryPanZhanJiAck : function(data){
+        cc.log("----- 战绩 -----")
+        cc.log(data)
+        cc.log("----- 战绩 -----")
+        this.node.parent.getChildByName("zhanjiUI").getComponent("zhanjiUI").getRecordByNet(data);
+    }
 
     //--------------End Server ----------------
 

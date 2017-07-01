@@ -16,12 +16,14 @@ GameManager.initGame = function(playerList, gameUICB){
 
 GameManager.init = function(){
 	this.initDirectionNodeList();
-	this.setDeskPlayersData(); 
+	this.refreshDeskPlayersData(); 
+	this.cleanData();
 	var mmgr    = NetMessageMgr;
 	var netList = NetProtocolList;
 	mmgr.addMessageCB(netList.EnterRoomNoticeNum.netID, this.onUserEnterRoom, this);
 	mmgr.addMessageCB(netList.PrepareNoticeNum.netID, this.prepareNoticeMessage, this);
 	mmgr.addMessageCB(netList.ExitRoomNoticeNum.netID, this.exitRoomNotice, this);
+	mmgr.addMessageCB(netList.DissolveRoomNoticeNum.netID,this.DissolveRoomNotice, this);
 	mmgr.addMessageCB(netList.FaPaiMessageNum.netID,this.startFaPai, this);
 	mmgr.addMessageCB(netList.CaiShengPaiNoticeNum.netID, this.caiShengPai, this)
 	mmgr.addMessageCB(netList.BenMenFengReminderNum.netID, this.benmenFengNotice, this)
@@ -45,6 +47,7 @@ GameManager.init = function(){
 	mmgr.addMessageCB(netList.ZiMoHuPaiAckMessageNum.netID, this.ZiMoHuPaiAckMessage, this);
 	mmgr.addMessageCB(netList.MoPaiZuHeReminderNum.netID, this.MoPaiZuHeReminder, this);
 	mmgr.addMessageCB(netList.RestoreListenReminderNum.netID, this.RestoreListenReminder, this);
+	mmgr.addMessageCB(netList.VotingReminderNum.netID, this.VotingReminder, this);
 }
 
 GameManager.onDestroy  = function(){
@@ -52,6 +55,7 @@ GameManager.onDestroy  = function(){
 	var netList = NetProtocolList;
 	mmgr.rmMessageCB(netList.EnterRoomNoticeNum.netID,this.onUserEnterRoom);
 	mmgr.rmMessageCB(netList.PrepareNoticeNum.netID, this.prepareNoticeMessage);
+	mmgr.rmMessageCB(netList.DissolveRoomNoticeNum.netID,this.DissolveRoomNotice);
 	mmgr.rmMessageCB(netList.ExitRoomNoticeNum.netID, this.exitRoomNotice);
 	mmgr.rmMessageCB(netList.FaPaiMessageNum.netID,this.startFaPai);
 	mmgr.rmMessageCB(netList.CaiShengPaiNoticeNum.netID, this.caiShengPai)
@@ -76,11 +80,24 @@ GameManager.onDestroy  = function(){
 	mmgr.rmMessageCB(netList.ZiMoHuPaiAckMessageNum.netID, this.ZiMoHuPaiAckMessage);
 	mmgr.rmMessageCB(netList.MoPaiZuHeReminderNum.netID, this.MoPaiZuHeReminder);
 	mmgr.rmMessageCB(netList.RestoreListenReminderNum.netID, this.RestoreListenReminder);
+	mmgr.rmMessageCB(netList.VotingReminderNum.netID, this.VotingReminder);
 }
 
 //新一轮
 GameManager.newRound = function(paiData){
 	this.isRoundIsOver = false;
+	this.totalReduce   = 0;
+ 	this.bindUserDirection();
+	this.setStartPaiData();
+	this.gameUICB.gameStart();  
+    this.hideAllReadyNode();
+    this.liujupaiCount = utils.getChannelInfo().zhuangPaiCount;
+}
+
+GameManager.cleanData = function(){
+	this.startPaiData = undefined;
+	this.meDirection  = undefined;
+	this.CaiShenPai   = undefined
 }
 
 
@@ -127,60 +144,20 @@ GameManager.initDirectionNodeList = function(){
 	this.directionNodeList       = nodeList;
 }
 
-
-// GameManager.getPlayerByDestType = function(desPosType){
-// 	return this.playerList[desPosType]
-// }
-
-GameManager.selfReadToPlay = function(isReady){
-	this.playerList[GameDefine.DESKPOS_TYPE.XIA].setReadyData(isReady);
-},
-
-
-// //庄家
-// GameManager.setPlayerZhuangjia = function(deskType){
-// 	this.zhuangIndex= deskIndex;
-// }
-
-
-
-
-// GameManager.logMajiang = function(){
-// 	this.playerList.forEach(function(item, index){
-// 		log(item.name + item.toString())
-// 	})
-// }
-
-
-// GameManager.turnToNextPlayer = function(){
-// 	/*
-// 	if(this.curPlayer){
-// 		this.curPlayer.darkDirection();
-// 	}
-// 	this.curPlayer = this.playerList[this.curPlayerIndex];
-// 	this.curPlayer.lightDirection();
-// 	*/
-// }
-
-// GameManager.endMajiang = function(){
-// 	this.isRoundIsOver = true;
-// 	log("----某人胡了")
-// 	this.logMajiang();
-// }
-
 //设置座位上的玩家数据
-GameManager.setDeskPlayersData = function () {
+GameManager.refreshDeskPlayersData = function () {
 	var roomPlayers =  GameDataMgr.getRoomPlayers();
-	for(let i = 0; i < roomPlayers.length; i++){
-		var playerInfo = roomPlayers[i];
-		playerInfo.deskType = this.getDeskTypeByPos(playerInfo.PlayerIdx);
-		this.setPlayerData(playerInfo);
+	for(let destPos =0; destPos <4; destPos++){
+		var playerInfo = roomPlayers[destPos];
+		this.setPlayerData(playerInfo, destPos);
 	}
 }
 
 //给玩家设置数据
-GameManager.setPlayerData = function (playerInfo) {
-	var player = this.playerList[playerInfo.deskType];
+GameManager.setPlayerData = function (playerInfo, pos) {
+	cc.log("--setPlayerData------" + pos, playerInfo)
+	var deskType = this.getDeskTypeByPos(pos)
+	var player   = this.playerList[deskType];
 	player.setUserData(playerInfo);
 }
 
@@ -202,47 +179,39 @@ GameManager.getDeskTypeByPos = function(PlayerIdx){
 // /* ---------------- Start Net Message --------------------------*/
 //当玩家进入房间
 GameManager.onUserEnterRoom = function(data){
-	var playerInfo      = data.PlayerInformation;
-	playerInfo.deskType = this.getDeskTypeByPos(playerInfo.PlayerIdx)
-	var roomPlayers     =  GameDataMgr.getRoomPlayers();
-	roomPlayers.push(playerInfo);
-	this.setPlayerData(playerInfo);
+	var playerInfo  = data.PlayerInformation;
+	var roomPlayers =  GameDataMgr.getRoomPlayers();
+	roomPlayers[playerInfo.PlayerIdx] = playerInfo;
+	this.setPlayerData(playerInfo, playerInfo.PlayerIdx);
 }
 
-GameManager.prepareNoticeMessage = function (data) {
+//解散房间
+GameManager.DissolveRoomNotice = function(){
 	var self = this;
-	var roomPlayers = GameDataMgr.getRoomPlayers();
-	roomPlayers.forEach(function(item){
-		if(item.PlayerIdx == data.PlayerIdx){
-			var player = self.playerList[item.deskType];
-			player.setReadyData(true);
-		}
-	})
-	
+	var cb = function(){
+		self.exiteRoom();
+	}
+	this.gameUICB.showDissolved(cb)
 }
 
 //退出房间通知
 GameManager.exitRoomNotice = function (data) {
-	var playerID    = data.PlayerIdx;
 	var roomPlayers = GameDataMgr.getRoomPlayers();
-	for(var i = 0; i <roomPlayers.length; i++){
-		if(roomPlayers[i].playerID === playerID){
-			var deskType = roomPlayers[i].deskType;
-			this.setPlayerData(deskType)
-			roomPlayers.splice(i, 1);
-			break;
-		}
-	}
+	roomPlayers[data.PlayerIdx] = undefined;
+	this.setPlayerData(undefined, data.PlayerIdx);
+}
+
+GameManager.prepareNoticeMessage = function (data) {
+	var roomPlayers = GameDataMgr.getRoomPlayers();
+	var deskType    = this.getDeskTypeByPos(data.PlayerIdx);
+	var player      = this.playerList[deskType];
+	player.setReadyData(true);
 }
 
 
 //新的一局开始发牌
 GameManager.startFaPai = function(paiData) {
- 	this.newRound();
- 	this.gameUICB.gameStart();
- 	this.startPaiData = paiData;
- 	this.checkPaiData();
- 	this.hideAllReadyNode();
+	this.startPaiData = paiData;
 }
 
 //隐藏所有的
@@ -254,13 +223,15 @@ GameManager.hideAllReadyNode = function(){
 
 }
 
-GameManager.checkPaiData = function(){
+GameManager.isCaiShenPai = function(paiID){
+	return (this.CaiShenPai === paiID);
+}
+
+GameManager.checkPaiDataReady = function(){
 	if(!this.startPaiData || !this.meDirection || !this.CaiShenPai){
 		return;		
 	}
-	this.bindUserDirection();
-	this.gameUICB.cleanResidue();
-	this.setStartPaiData();
+	this.newRound();
 }
 
 GameManager.setStartPaiData = function(){
@@ -285,15 +256,25 @@ GameManager.setStartPaiData = function(){
 			player.setStartPaiData(mePaiList);
 		}
 	}
-	this.gameUICB.refreResidue(fapaiCount);
+	this.refreResidue(fapaiCount);
 	// cai shen pai
-	this.gameUICB.refreResidue(1);
+	this.refreResidue(1);
+}
+
+GameManager.refreResidue = function(reduce){
+	this.totalReduce += reduce;
+    this.leftPai = utils.getChannelInfo().totalPai - this.totalReduce;
+    this.gameUICB.refreResidue(this.leftPai);
+}
+
+GameManager.addLiujuCount = function(){
+	this.liujupaiCount += 1;
 }
 
 
 //摸牌
 GameManager.MoPaiNotice = function(data){
-	this.gameUICB.refreResidue(1);
+	this.refreResidue(1);
 	this.ChuPaiStatus = GameDefine.CHUPAI_STATUS.NEW;
 	var deskType = this.getDeskTypeByPos(data.PlayerIdx)
 	//netID 102 没有推送PlayerIdx数据过来 102是自己摸牌
@@ -306,10 +287,10 @@ GameManager.MoPaiNotice = function(data){
 
 
 
-// //离开房间
-// GameManager.exiteRoom = function(){
-
-// }
+//离开房间
+GameManager.exiteRoom = function(){
+	 cc.director.loadScene("main");
+}
 
 //定财神通知
 GameManager.caiShengPai = function(data){
@@ -319,7 +300,7 @@ GameManager.caiShengPai = function(data){
 		var player = this.playerList[k];
 		player.refreCaiShenColor();
 	}
-	this.checkPaiData();
+	this.checkPaiDataReady();
 }
 
 //玩家出牌
@@ -334,7 +315,7 @@ GameManager.turnToChupai = function(pai){
 //本门风提示
 GameManager.benmenFengNotice = function(data) {
 	this.meDirection = data.Atile
-	this.checkPaiData();
+	this.checkPaiDataReady();
 }
 
 ////生牌阶段通知
@@ -371,7 +352,7 @@ GameManager.getEatPaiRotate = function(meDeskType){
 
 //别的玩家出牌后，你可以对此牌进行的操作
 GameManager.ChuPaiZuHeReminder = function(data){
-	var eatTypeList = this.getEatTypeList(data.Opts);
+	var eatTypeList = this.getEatTypeList(data.Opts, this.isShowGuo());
 	this.gameUICB.showCanEatUI(eatTypeList, data.Data);
 	this.eatPaiData = data;
 	this.eatTag     = "chuPai";
@@ -382,20 +363,35 @@ GameManager.MoPaiZuHeReminder = function(data) {
 	this.eatTag     = "moPai";
 }
 
-GameManager.getEatTypeList = function(Opts){
-	var optList = Opts.toString(2);
-	optList = optList + "";
-	var totaLen = optList.length;
-	var startIndex = 0;
+GameManager.getEatTypeList = function(Opts, isPushGuo){
+	var optList     = Opts.toString(2)+"";
+	var totaLen     = optList.length;
+	var startIndex  = 0;
 	var eatTypeList = [];
+	if(isPushGuo){
+		eatTypeList.push(8); //guo pai
+	}
+	
 	for(let i = totaLen; i > 0; i--){
 		if(optList.charAt(i-1) == 1){
-			eatTypeList.push(GameDefine.EAT_TYPE[startIndex])
+			eatTypeList.push(startIndex);
 		}
 		startIndex += 1;
 	}
 	return eatTypeList;
 }
+GameManager.playerWantToOut = function(){
+	var content = {};
+	var netID   = NetProtocolList.VotingStartMessageNum.netID;
+	NetMessageMgr.send(netID, content);
+}
+
+//show votiing window
+GameManager.VotingReminder = function(data){
+	this.gameUICB.showVoting()
+}
+
+
 //过牌
 GameManager.guoPaiToServer = function(){
 	var netID;
@@ -458,16 +454,16 @@ GameManager.ChuPaiZuHeNotice = function(data){
 	this.ChuPaiStatus = GameDefine.CHUPAI_STATUS.EATED;
 	this.turnToNextPlayer(player);
 	//碰牌
-	if(eatType === GameDefine.EAT_TYPE[2]){
+	if(eatType === GameDefine.EATPAI_TYPE.PengPai){
 		player.peng(data.Atile, false);
 	}
-	if(eatType === GameDefine.EAT_TYPE[3]){
+	if(eatType === GameDefine.EATPAI_TYPE.ChiPai){
 		player.chi(data.Data, false);
 	}
 	//min gang
-	if(eatType === GameDefine.EAT_TYPE[1] || 
-		eatType === GameDefine.EAT_TYPE[5] ||
-		eatType === GameDefine.EAT_TYPE[6]){
+	if(eatType === GameDefine.EATPAI_TYPE.MingGang2 || 
+		eatType === GameDefine.EATPAI_TYPE.AnGang ||
+		eatType === GameDefine.EATPAI_TYPE.MingGang1){
 		player.gang(data.Atile, false, eatType);
 	}
 	this.lastChuPaiData = data;
@@ -487,20 +483,20 @@ GameManager.ChiPaiAckMessage = function(data){
 //明杠牌 ACK
 GameManager.MingGang2PaiAckMessage = function(data){
 	if(data.Rst == true){
-		this.gangPaiAck(GameDefine.EAT_TYPE[1]);
+		this.gangPaiAck(GameDefine.EATPAI_TYPE.MingGang2);
 	}
 }
 
 //明杠牌 ACK
 GameManager.MingGang1PaiAckMessage = function(data){
 	if(data.Rst == true){
-		this.gangPaiAck(GameDefine.EAT_TYPE[6]);
+		this.gangPaiAck(GameDefine.EATPAI_TYPE.MingGang1);
 	}
 }
 
 GameManager.AnGangPaiAckMessage = function(data){
 	if(data.Rst == true){
-		this.gangPaiAck(GameDefine.EAT_TYPE[5]);
+		this.gangPaiAck(GameDefine.EATPAI_TYPE.AnGang);
 	}
 }
 
@@ -527,12 +523,17 @@ GameManager.turnToNextPlayer = function(player){
 
 //抢杠提示
 GameManager.QiangGangReminder = function(){
-	this.eatTag     = "QiangGang";
 	var data        = {};
 	data.Atile      = this.lastChuPaiData.Atile;
-	data.Opts       = 1;
+	data.Opts       = 128; //2^7 就是128， index是7
+	var eatTypeList = this.getEatTypeList(data.Opts, this.isShowGuo());
 	this.eatPaiData = data;
-	this.gameUICB.showQiangGang();
+	this.eatTag     = "QiangGang";
+	this.gameUICB.showCanEatUI(eatTypeList, data.Data);
+}
+GameManager.isShowGuo = function(){
+	var ishaveNext  = this.leftPai > this.liujupaiCount;
+	return ishaveNext;
 }
 
 GameManager.QiangGangNotice = function(data){

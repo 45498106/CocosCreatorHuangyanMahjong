@@ -4,544 +4,577 @@
 	<dict>
 		<key>frames</key>
 		<dict>
-			<key>anniu_18.png</key>
+			<key>pj_104.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{173,0},{260,104}}</string>
+				<string>{{0,210},{68,79}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
 				<false />
 				<key>sourceSize</key>
-				<string>{260,104}</string>
+				<string>{68,79}</string>
 			</dict>
-			<key>anniu_19.png</key>
+			<key>pj_11.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{584,0},{154,78}}</string>
+				<string>{{0,289},{68,79}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
 				<false />
 				<key>sourceSize</key>
-				<string>{154,78}</string>
+				<string>{68,79}</string>
 			</dict>
-			<key>anniu_20.png</key>
+			<key>pj_114.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{989,0},{76,34}}</string>
+				<string>{{0,368},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_12.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{0,447},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_124.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{0,526},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_13.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{0,605},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_134.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{0,684},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_14.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{0,763},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_144.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{0,842},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_154.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{0,921},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_21.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{68,210},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_22.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{72,0},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_23.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{72,79},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_24.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{68,289},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_31.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{68,368},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_32.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{68,447},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_33.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{68,526},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_34.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{68,605},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_41.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{68,684},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_42.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{68,763},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_43.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{68,842},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_44.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{68,921},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_51.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{136,158},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_52.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{140,0},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_53.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{140,79},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_54.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{136,237},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_61.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{136,316},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_62.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{136,395},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_63.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{136,474},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_64.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{136,553},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_71.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{136,632},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_72.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{136,711},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_73.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{136,790},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_74.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{136,869},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_81.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{136,948},{68,79}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
 				<true />
 				<key>sourceSize</key>
-				<string>{76,34}</string>
+				<string>{68,79}</string>
 			</dict>
-			<key>biaoti_3.png</key>
+			<key>pj_82.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{120,172},{222,43}}</string>
+				<string>{{204,158},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_83.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{208,0},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_84.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{208,79},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_91.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{204,237},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_92.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{204,316},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_93.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{204,395},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_94.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{204,474},{68,79}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{68,79}</string>
+			</dict>
+			<key>pj_hengpeng.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{204,802},{47,43}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
 				<true />
 				<key>sourceSize</key>
-				<string>{222,43}</string>
+				<string>{47,43}</string>
 			</dict>
-			<key>caisheng.png</key>
+			<key>pj_hengpeng_c.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{0,407},{68,62}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<false />
-				<key>sourceSize</key>
-				<string>{68,62}</string>
-			</dict>
-			<key>caisheng_2.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{949,104},{44,34}}</string>
+				<string>{{204,849},{47,43}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
 				<true />
 				<key>sourceSize</key>
-				<string>{44,34}</string>
+				<string>{47,43}</string>
 			</dict>
-			<key>caisheng_3.png</key>
+			<key>pj_shou0.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{279,272},{22,20}}</string>
+				<string>{{72,158},{44,64}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
 				<true />
 				<key>sourceSize</key>
-				<string>{22,20}</string>
+				<string>{44,64}</string>
 			</dict>
-			<key>dikuang1_4.png</key>
+			<key>pj_shou1.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{279,334},{84,75}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<false />
-				<key>sourceSize</key>
-				<string>{84,75}</string>
-			</dict>
-			<key>dikuang5_7.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{507,284},{110,61}}</string>
+				<string>{{204,896},{28,63}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
 				<true />
 				<key>sourceSize</key>
-				<string>{110,61}</string>
+				<string>{28,63}</string>
 			</dict>
-			<key>gou.png</key>
+			<key>pj_shou2.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{163,340},{81,71}}</string>
+				<string>{{0,0},{72,105}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
 				<false />
 				<key>sourceSize</key>
-				<string>{81,71}</string>
+				<string>{72,105}</string>
 			</dict>
-			<key>hu_hupaitishi.png</key>
+			<key>pj_shou2_c.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{68,432},{61,69}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<true />
-				<key>sourceSize</key>
-				<string>{61,69}</string>
-			</dict>
-			<key>hudong_jidan.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{158,411},{60,72}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<true />
-				<key>sourceSize</key>
-				<string>{60,72}</string>
-			</dict>
-			<key>hudong_tuoxie.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{323,411},{66,72}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<true />
-				<key>sourceSize</key>
-				<string>{66,72}</string>
-			</dict>
-			<key>hudong_wen.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{688,78},{82,47}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<true />
-				<key>sourceSize</key>
-				<string>{82,47}</string>
-			</dict>
-			<key>hudong_xianhua.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{397,332},{84,81}}</string>
+				<string>{{0,105},{72,105}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
 				<false />
 				<key>sourceSize</key>
-				<string>{84,81}</string>
+				<string>{72,105}</string>
 			</dict>
-			<key>juhuangxian.png</key>
+			<key>pj_shou3.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{397,254},{78,110}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<true />
-				<key>sourceSize</key>
-				<string>{78,110}</string>
-			</dict>
-			<key>pj_anniudi.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{863,60},{83,86}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<true />
-				<key>sourceSize</key>
-				<string>{83,86}</string>
-			</dict>
-			<key>pj_chi.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{0,291},{119,116}}</string>
+				<string>{{247,802},{28,63}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
 				<false />
 				<key>sourceSize</key>
-				<string>{119,116}</string>
+				<string>{28,63}</string>
 			</dict>
-			<key>pj_dangqianjushu.png</key>
+			<key>pj_zhenbeimian.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{863,0},{126,60}}</string>
+				<string>{{204,719},{56,83}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
 				<false />
 				<key>sourceSize</key>
-				<string>{126,60}</string>
+				<string>{56,83}</string>
 			</dict>
-			<key>pj_fangweibei.png</key>
+			<key>pj_zhipeng.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{528,150},{134,52}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<true />
-				<key>sourceSize</key>
-				<string>{134,52}</string>
-			</dict>
-			<key>pj_fangweibuliang.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{433,0},{151,150}}</string>
+				<string>{{204,553},{58,83}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
 				<false />
 				<key>sourceSize</key>
-				<string>{151,150}</string>
+				<string>{58,83}</string>
 			</dict>
-			<key>pj_fangweidong.png</key>
+			<key>pj_zhipeng_c.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{735,95},{52,134}}</string>
+				<string>{{204,636},{58,83}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
 				<false />
 				<key>sourceSize</key>
-				<string>{52,134}</string>
-			</dict>
-			<key>pj_fangweihong.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{137,471},{58,58}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<false />
-				<key>sourceSize</key>
-				<string>{58,58}</string>
-			</dict>
-			<key>pj_fangweihuang.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{60,493},{58,58}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<false />
-				<key>sourceSize</key>
-				<string>{58,58}</string>
-			</dict>
-			<key>pj_fangweinan.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{787,95},{134,52}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<true />
-				<key>sourceSize</key>
-				<string>{134,52}</string>
-			</dict>
-			<key>pj_fangweixi.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{580,182},{52,134}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<false />
-				<key>sourceSize</key>
-				<string>{52,134}</string>
-			</dict>
-			<key>pj_fangweizhuanpandi.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{0,0},{173,172}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<false />
-				<key>sourceSize</key>
-				<string>{173,172}</string>
-			</dict>
-			<key>pj_gang.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{306,104},{132,118}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<true />
-				<key>sourceSize</key>
-				<string>{132,118}</string>
-			</dict>
-			<key>pj_guo.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{163,224},{116,116}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<false />
-				<key>sourceSize</key>
-				<string>{116,116}</string>
-			</dict>
-			<key>pj_hu.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{0,172},{119,120}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<true />
-				<key>sourceSize</key>
-				<string>{119,120}</string>
-			</dict>
-			<key>pj_jifeng.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{279,224},{48,20}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<true />
-				<key>sourceSize</key>
-				<string>{48,20}</string>
-			</dict>
-			<key>pj_jifengdikuang.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{244,340},{34,31}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<false />
-				<key>sourceSize</key>
-				<string>{34,31}</string>
-			</dict>
-			<key>pj_liaotiananniu.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{632,227},{53,43}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<false />
-				<key>sourceSize</key>
-				<string>{53,43}</string>
-			</dict>
-			<key>pj_peng.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{173,104},{133,120}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<false />
-				<key>sourceSize</key>
-				<string>{133,120}</string>
-			</dict>
-			<key>pj_shezhianniu.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{686,216},{49,49}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<false />
-				<key>sourceSize</key>
-				<string>{49,49}</string>
-			</dict>
-			<key>pj_touxiangkuang.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{584,78},{104,104}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<false />
-				<key>sourceSize</key>
-				<string>{104,104}</string>
-			</dict>
-			<key>pj_tuichuanniu.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{688,160},{56,47}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<true />
-				<key>sourceSize</key>
-				<string>{56,47}</string>
-			</dict>
-			<key>pj_xuanzechipai.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{244,409},{70,79}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<true />
-				<key>sourceSize</key>
-				<string>{70,79}</string>
-			</dict>
-			<key>pj_yizhunbei.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{738,0},{125,95}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<false />
-				<key>sourceSize</key>
-				<string>{125,95}</string>
-			</dict>
-			<key>pj_yuyinganniu.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{632,182},{45,54}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<true />
-				<key>sourceSize</key>
-				<string>{45,54}</string>
-			</dict>
-			<key>pj_zhibei.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{119,394},{39,38}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<false />
-				<key>sourceSize</key>
-				<string>{39,38}</string>
-			</dict>
-			<key>pj_zhidong.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{363,334},{33,43}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<false />
-				<key>sourceSize</key>
-				<string>{33,43}</string>
-			</dict>
-			<key>pj_zhinan.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{987,76},{36,45}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<false />
-				<key>sourceSize</key>
-				<string>{36,45}</string>
-			</dict>
-			<key>pj_zhinengmoshianniu.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{983,121},{41,56}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<false />
-				<key>sourceSize</key>
-				<string>{41,56}</string>
-			</dict>
-			<key>pj_zhixi.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{363,377},{34,34}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<false />
-				<key>sourceSize</key>
-				<string>{34,34}</string>
-			</dict>
-			<key>touxiangkuang_1.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{299,236},{98,98}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<false />
-				<key>sourceSize</key>
-				<string>{98,98}</string>
-			</dict>
-			<key>touxiangkuang_2.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{424,150},{104,104}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<false />
-				<key>sourceSize</key>
-				<string>{104,104}</string>
-			</dict>
-			<key>x.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{0,469},{60,58}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<false />
-				<key>sourceSize</key>
-				<string>{60,58}</string>
-			</dict>
-			<key>zhongjianchaishendi.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{949,60},{38,44}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<false />
-				<key>sourceSize</key>
-				<string>{38,44}</string>
+				<string>{58,83}</string>
 			</dict>
 		</dict>
 		<key>metadata</key>
@@ -549,16 +582,16 @@
 			<key>format</key>
 			<integer>2</integer>
 			<key>textureFileName</key>
-			<string>gameResList.png</string>
+			<string>paiList.png</string>
 			<key>realTextureFileName</key>
-			<string>gameResList.png</string>
+			<string>paiList.png</string>
 			<key>size</key>
-			<string>{1024,1024}</string>
+			<string>{512,1024}</string>
 		</dict>
 		<key>texture</key>
 		<dict>
 			<key>width</key>
-			<integer>1024</integer>
+			<integer>512</integer>
 			<key>height</key>
 			<integer>1024</integer>
 		</dict>

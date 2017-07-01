@@ -10,7 +10,7 @@ var playerCls  = function () {
 playerCls.prototype.setUserData = function (playerData) {
     this.playerData = playerData;
     this.playerUI.refreshPlayerData(playerData);
-    this.setReadyData(playerData.Status === GameDefine.PLAYER_READY.READY);
+    this.setReadyData(playerData && playerData.Status === GameDefine.PLAYER_READY.READY);
 }
 
 playerCls.prototype.setDirectNode = function(directionN, direction){
@@ -141,20 +141,6 @@ playerCls.prototype.getPaiObj = function(id){
 
 //摸到新牌
 playerCls.prototype.mopai = function(id){
-
-    /*
-    this.setCurMoPaiUdid(pai);
-    this.playerUI.addPai(pai);
-    if(this.paiDataObj.isCanSelfGang(pai)){
-        var gangType = GameDefine.EAT_TYPE.GANG;
-        this.playerUI.pengGangPaiUI(gangType, this.paiDataObj);
-        gameManager.mopai();
-    }else {        
-        this.paiDataObj.addPai(pai);    
-        this.checkIsHu();
-        this.turnToChupai();
-    }
-    */
     var pai = this.getPaiObj(id);
     this.curMoPaiUdid = pai.udid;
     this.paiDataObj.addPai(pai); 
@@ -216,17 +202,6 @@ playerCls.prototype.setPaiEnd = function(ChuPaiStatus){
     this.playerUI.setPaiEnd(isNoOneEat, this.paiDataObj, this.curDaPai.udid);
 }
 
-// playerCls.prototype.eatPai = function(opearType, pai){
-//     gameManager.eatPai(true);
-//     this.paiDataObj.eatPai(opearType, pai);
-//     if(opearType === GameDefine.EAT_TYPE.HU) {
-//         log("---有人给 " + this.name + "点炮 牌是: " + pai.huaseCN)
-//         gameManager.endMajiang();
-//     }else {
-//         this.turnToChupai();
-//     }
-//     this.playerUI.pengGangPaiUI(opearType, this.paiDataObj);
-// }
 playerCls.prototype.peng = function(paiID, isSelf){
     var pai = this.getPaiObj(paiID);
     var rotateData = gameManager.getEatPaiRotate(this.desPosType);
@@ -237,10 +212,12 @@ playerCls.prototype.peng = function(paiID, isSelf){
 
 playerCls.prototype.gang = function(paiID, isSelf, gangType){
     var pai = this.getPaiObj(paiID);
+    //每杠一张牌流局就多一张牌
+    gameManager.addLiujuCount();
     var rotateData = gameManager.getEatPaiRotate(this.desPosType);
-    if(gangType === GameDefine.EAT_TYPE[6]){
+    if(gangType === GameDefine.EATPAI_TYPE.MingGang1){
         this.paiDataObj.gang_0(pai, isSelf);
-    }else if(gangType === GameDefine.EAT_TYPE[5]){
+    }else if(gangType === GameDefine.EATPAI_TYPE.AnGang){
         this.paiDataObj.gang_1(pai, isSelf), rotateData;
     }else {
         this.paiDataObj.gang_2(pai, isSelf, rotateData);

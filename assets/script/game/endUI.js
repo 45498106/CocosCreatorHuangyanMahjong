@@ -312,7 +312,7 @@ cc.Class({
     },
 
     onBtnExitClicked : function () {
-        cc.director.loadScene("main");
+        this.endRoundN.active    = false;
     },
 
     //share single report to other

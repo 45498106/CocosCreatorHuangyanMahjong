@@ -7,16 +7,11 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-       setNode : cc.Node,
+       setNode            : cc.Node,
        languageLayerNode  : cc.Node,
        bindPhoneLayerNode : cc.Node,
        writeOffBtnNode    : cc.Node,
-       soundToggleNode    : cc.Node,
-       musicToggleNode    : cc.Node,
-       languageList1      : cc.Node,
-       languageList2      : cc.Node,
-       languageList3      : cc.Node,
-       languageList4      : cc.Node,
+       biankuang          : cc.Node,
        phoneNumNode       : cc.Node,
        verificationCode   : cc.EditBox,
        getVCBnt           : cc.Node,
@@ -36,8 +31,10 @@ cc.Class({
     },
 
     setInitFunc : function(){
-        this.soundToggleNode.getComponent(cc.Toggle).isChecked = UserLocalData.getSoundSwitch();
-        this.musicToggleNode.getComponent(cc.Toggle).isChecked = UserLocalData.getMusicSwitch();
+        this.soundToggle = this.biankuang.getChildByName("switchBox").getChildByName("soundToggle");
+        this.musicToggle = this.biankuang.getChildByName("switchBox").getChildByName("soundToggle");
+        this.soundToggle.getComponent(cc.Toggle).isChecked = UserLocalData.getSoundSwitch();
+        this.musicToggle.getComponent(cc.Toggle).isChecked = UserLocalData.getMusicSwitch();
         this.btnStatusChanged(UserLocalData.getAudioKind());
     },
 
@@ -66,19 +63,24 @@ cc.Class({
     },
     //选择语言按钮状态变化
     btnStatusChanged : function(lanKind){
+        var scrollView = this.bindPhoneLayerNode.getChildByName("scrollView");
+        var lanListAll = scrollView.getChildByName("view").getChildByName("content")
+        var lanListArr = new Array();
+        for(let i=0; i<4; i++)
+            lanListArr[i] = lanListAll.getChildByName("langList"+(i+1));
         var num;
         if(lanKind == "mandarin") num = 1;
         else if(lanKind == "hyDialect") num = 2;
         else if(lanKind == "papiJ") num = 3;
         else if(lanKind == "xiaozhi") num = 4;
         for(let i=1; i<5; i++){
-            var list = this["languageList"+i];
+            var list = lanListArr[i-1];
             list.getChildByName("langBtn").getChildByName("label").getComponent(cc.Label).string = "使   用";
             list.getChildByName("langBtnUsed").active = false;
             list.getChildByName("langBtn").active = true;
         }
-        this["languageList"+num].getChildByName("langBtnUsed").active = true;
-        this["languageList"+num].getChildByName("langBtn").active = false;
+        lanListArr[num-1].getChildByName("langBtnUsed").active = true;
+        lanListArr[num-1].getChildByName("langBtn").active = false;
     },
 
     //进入手机绑定界面
@@ -172,7 +174,7 @@ cc.Class({
     //音效音乐开关设置
     onBtnSoundMusicSet : function(event, num){
         if(num === "sound"){
-            var mark = this.soundToggleNode.getComponent(cc.Toggle).isChecked;
+            var mark = this.soundToggle.getComponent(cc.Toggle).isChecked;
             if(mark){
                 UserLocalData.setSoundSwitch(true);
                 Audio.resumeSound();
@@ -181,7 +183,7 @@ cc.Class({
                 Audio.stopSound();
             }
         } else {
-            var mark = this.musicToggleNode.getComponent(cc.Toggle).isChecked;
+            var mark = this.musicToggle.getComponent(cc.Toggle).isChecked;
             if(mark){
                 UserLocalData.setMusicSwitch(true);
                 Audio.resumeMusic();
@@ -203,8 +205,8 @@ cc.Class({
         var promptBox = cc.instantiate(prefab);
         promptBox.setPosition(cc.p(0, 0));
         this.setNode.addChild(promptBox);
-        if(prefab.name == "alertPrefab") {
-            if (msg || cs) promptBox.getComponent("alertPrefab").getMessageFrom(msg, cs);
+        if(prefab.name == "alert") {
+            if (msg || cs) promptBox.getComponent("alertUI").getMessageFrom(msg, cs);
         } else if (prefab.name == "toastPrefab") {
             if (msg || cs) promptBox.getComponent("toastPrefab").getMessageFrom(msg, cs);
         }
@@ -230,8 +232,5 @@ cc.Class({
                 self.setNode.active = false;
             }) )
         this.setNode.runAction(outAction);
-
-        UserLocalData.setSoundSwitch(this.soundToggleNode.getComponent(cc.Toggle).isChecked);
-        UserLocalData.setMusicSwitch(this.musicToggleNode.getComponent(cc.Toggle).isChecked);
     },
 });

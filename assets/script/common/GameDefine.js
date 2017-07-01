@@ -73,15 +73,17 @@ GameDefine.DIRECTION_TYPE = {
 //AnGang    = 5
 //MingGang1 = 6 //手上有三张碰出去的牌，杠自己摸的
 //吃牌类型
-GameDefine.EAT_TYPE    = [];
-GameDefine.EAT_TYPE[0] = "PuTongHu";
-GameDefine.EAT_TYPE[1] = "MingGang2";
-GameDefine.EAT_TYPE[2] = "PengPai";
-GameDefine.EAT_TYPE[3] = "ChiPai";
-GameDefine.EAT_TYPE[4] = "ZiMoHu";
-GameDefine.EAT_TYPE[5] = "AnGang";
-GameDefine.EAT_TYPE[6] = "MingGang1";
-
+GameDefine.EATPAI_TYPE = {
+	PuTongHu : 0,
+	MingGang2: 1,
+	PengPai  : 2,
+	ChiPai   : 3,
+	ZiMoHu   : 4,
+	AnGang   : 5,
+	MingGang1: 6,
+	QiangGang: 7,
+	GuoPai   : 8,
+}
 
 //出牌状态
 GameDefine.CHUPAI_STATUS = {
@@ -98,6 +100,7 @@ GameDefine.GAME_TYPE = {
 		serverAddr : "192.168.1.70:9999/websocket",
 		zhuangPaiCount : 14, //庄家牌的数量 
 		totalPai  : 136, //总共好多张牌
+		liujupai  : 14,  //当剩余牌数为这个数目的时候就是流局
 	}
 }
 

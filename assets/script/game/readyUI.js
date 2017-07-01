@@ -1,36 +1,52 @@
-var GameDataMgr = require("GameDataMgr");
+var GameDataMgr     = require("GameDataMgr");
 var NetMessageMgr   = require("NetMessageMgr");
 var NetProtocolList = require("NetProtocolList");
-
+var gameManager     = require("gameManager");
+var GameDefine      = require("GameDefine");
+var log             = require("utils").log;
 cc.Class({
     extends: cc.Component,
 
     properties: {
         readyN : cc.Node, 
         reportN : cc.Node,
+        btnBack : cc.Node,
+    },
+
+    onLoad : function(){
+        this.initUI();
+        this.registerMessage();
+        this.refreBtnReady();
+        this.btnBack.active = false;
+    },
+
+    onDestory : function(){
+        this.unRegisterMesage();
+    },
+
+    initUI : function(){
+        var isMaster = GameDataMgr.getRoomMaster();
+        this.readyN.getChildByName("btnDissolve").active = isMaster;
+        this.readyN.getChildByName("btnOut").active = !isMaster;
     },
 
     // use this for initialization
-    onLoad: function () {
-        NetMessageMgr.addMessageCB(NetProtocolList.PrepareAckMessageNum.netID, 
-            this.prepareCallback, this);
-        NetMessageMgr.addMessageCB(NetProtocolList.DissolveRoomAckMessageNum.netID, 
-            this.dissolveRoomCallback, this);
-        NetMessageMgr.addMessageCB(NetProtocolList.ExitRoomAckMessageNum.netID, 
-            this.exitRoomCallback, this);
-        NetMessageMgr.addMessageCB(NetProtocolList.FaPaiMessageNum.netID,
-            this.startFaPai, this);
+    registerMessage: function () {
+        var nmm = NetMessageMgr;
+        var npl = NetProtocolList; 
+        nmm.addMessageCB(npl.PrepareAckMessageNum.netID, this.prepareCallback, this);
+        nmm.addMessageCB(npl.DissolveRoomAckMessageNum.netID, this.DissolveRoomAckMessage, this);
+        nmm.addMessageCB(npl.ExitRoomAckMessageNum.netID, this.ExitRoomAckMessage, this);
+        nmm.addMessageCB(npl.FaPaiMessageNum.netID,this.startFaPai, this);
     },
 
-    onDestory : function () {
-        NetMessageMgr.rmMessageCB(NetProtocolList.PrepareAckMessageNum.netID, 
-            this.prepareCallback);
-        NetMessageMgr.rmMessageCB(NetProtocolList.DissolveRoomAckMessageNum.netID, 
-            this.dissolveRoomCallback);
-        NetMessageMgr.rmMessageCB(NetProtocolList.ExitRoomAckMessageNum.netID, 
-            this.exitRoomCallback);
-        NetMessageMgr.rmMessageCB(NetProtocolList.FaPaiMessageNum.netID,
-            this.startFaPai)
+    unRegisterMesage : function () {
+        var nmm = NetMessageMgr;
+        var npl = NetProtocolList;
+        nmm.rmMessageCB(npl.PrepareAckMessageNum.netID, this.prepareCallback);
+        nmm.rmMessageCB(npl.DissolveRoomAckMessageNum.netID, this.DissolveRoomAckMessage);
+        nmm.rmMessageCB(npl.ExitRoomAckMessageNum.netID, this.ExitRoomAckMessage);
+        nmm.rmMessageCB(npl.FaPaiMessageNum.netID, this.startFaPai)
     },
 
 
@@ -44,6 +60,8 @@ cc.Class({
         var moveAct = cc.moveTo(0.3, cc.p(0, -800));
         this.readyN.runAction(cc.sequence(moveAct, cc.callFunc(function(){
             self.readyN.active = false;
+            gameManager.checkPaiDataReady();
+
         })))
     },
 
@@ -57,6 +75,7 @@ cc.Class({
 
     startFaPai : function(){
         this.onEveryOneReady();
+        this.btnBack.active = true;
     },
 
     //准备
@@ -67,8 +86,6 @@ cc.Class({
 
     //取消准备
     onBtnUnReadyClicked : function(){
-        this.readyN.getChildByName('btnReady').active = true;
-        this.readyN.getChildByName('btnUnReady').active = false;
         this.unPrepareToPlay();
     }, 
 
@@ -77,6 +94,12 @@ cc.Class({
         var centerN  = this.readyN.getChildByName("center");
         var roomIdN  = centerN.getChildByName("roomNumber").getChildByName('content');
         roomIdN.getComponent(cc.Label).string = roomInfo.RoomID;
+    },
+
+    refreBtnReady : function(){
+        var mePlayerData = GameDataMgr.getSelfPlayerData();
+        var isReady      = (mePlayerData.Status === GameDefine.PLAYER_READY.READY)
+        this.readyN.getChildByName('btnReady').active = !isReady; 
     },
 
     /*-----------------------------  Server Message -------------------------*/
@@ -88,28 +111,29 @@ cc.Class({
 
     prepareCallback : function (content) {
         this.reportN.active = false;
-        this.readyN.getChildByName('btnReady').active = false; 
-        require("gameManager").selfReadToPlay(true);
+        GameDataMgr.getSelfPlayerData().Status = GameDefine.PLAYER_READY.READY;
+        gameManager.refreshDeskPlayersData();
+        this.refreBtnReady();
     },
 
     dissolvedRoom : function () {
         var content    = {}
-        content.roomID = "11111";
+        content.roomID = GameDataMgr.getRoomInfo().RoomID;
         NetMessageMgr.send(NetProtocolList.DissolveRoomMessageNum.netID, content);
     },
 
     exitOutRoom : function(){
         var content    = {}
-        content.roomID = "11111";
+        content.roomID = GameDataMgr.getRoomInfo().RoomID;
         NetMessageMgr.send(NetProtocolList.ExitRoomMessageNum.netID, content);
     },
 
-    exitRoomCallback : function(data){
-        require("gameManager").exiteRoom();
+    ExitRoomAckMessage : function(data){
+        gameManager.exiteRoom();
     },
 
-    dissolveRoomCallback : function(){
-        require("gameManager").exiteRoom()
+    DissolveRoomAckMessage : function(){
+       gameManager.exiteRoom();
     },
 
     //取消准备

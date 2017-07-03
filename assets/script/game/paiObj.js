@@ -24,7 +24,6 @@ var paiObjCls =function(startPaiList){
 			}
 		}
 	}
-
 	//碰牌
 	this.chi = function(pai, chiData, isSelf, rotateData){
 		var pengList = []; 

@@ -65,9 +65,6 @@ var mainUI = cc.Class({
     
     //创建房间
     onBtnStartClicked : function(){
-        // if(this.startIsClicked){return}
-        // this.startIsClicked = true;    
-        // this.creatGameRoomToServer();
     },
 
     //进入牌桌开始打麻将
@@ -84,9 +81,9 @@ var mainUI = cc.Class({
     //进入设置
     onBtnSetClicked : function(){
         // this.actionFunc(this.setNode);
-
-        // var setPrefab = cc.instantiate(this.setPrefab);
-        // this.canvasNode.addChild(setPrefab);
+        this.copySetPrefab = cc.instantiate(this.setPrefab);
+        this.canvasNode.addChild(this.copySetPrefab);
+        this.onGetVerificationCodeAck(); //可删除
     },
 
     //进入消息
@@ -96,7 +93,7 @@ var mainUI = cc.Class({
 
     //进入战绩
     onBtnZhanjiClicked : function(){
-        // this.actionFunc(this.zhanjiNode);
+        this.actionFunc(this.zhanjiNode);
     },
 
     //创建房间
@@ -228,21 +225,6 @@ var mainUI = cc.Class({
         NetMessageMgr.send(NetProtocolList.EnterRoomMessageNum.netID, sendData);
     },
 
-    creatGameRoomToServer : function(){
-        var roomInfo = {
-                NoticeType : 2,
-                GameNum : 1,
-                PaymentMethod : 1,
-        }
-        GameDataMgr.setRoomInfo(roomInfo);
-        var sendData = {
-            PlayerID : GameDataMgr.getUserID(),//玩家帐号
-            RoomInformation   : roomInfo,//房间信息
-        }
-        log("send NetProtocolList", NetProtocolList)
-        NetMessageMgr.send(NetProtocolList.CreateRoomMessageNum.netID, sendData);
-    },
-
     //返回房间信息
     onRoomMessageAck : function(data){
         log("-onRoomMessageAck---", data)
@@ -286,7 +268,7 @@ var mainUI = cc.Class({
 
     //监听手机验证码消息
     onGetVerificationCodeAck : function(data){
-        this.node.parent.getChildByName("setUI").getComponent("setUI").getCodeByNet("0000");
+        this.copySetPrefab.getComponent("setUI").getCodeByNet("0000");
     },
 
     //查看战绩返回信息
@@ -294,7 +276,7 @@ var mainUI = cc.Class({
         cc.log("----- 战绩 -----")
         cc.log(data)
         cc.log("----- 战绩 -----")
-        this.node.parent.getChildByName("zhanjiUI").getComponent("zhanjiUI").getRecordByNet(data);
+        this.node.getChildByName("zhanjiUI").getComponent("zhanjiUI").getRecordByNet(data);
     }
 
     //--------------End Server ----------------

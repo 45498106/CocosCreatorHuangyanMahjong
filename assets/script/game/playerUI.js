@@ -70,10 +70,14 @@ cc.Class({
     	this.paiObjData = paiObjData;
     	this.setStartPai();	
     },
+    cleanPaiNode : function(){
+        log("--cleanPaiNode----", this)
+        log(this.paiListNode);
+        this.paiListNode.removeAllChildren();
+    },
 
     //设置拍得响应图案
     setStartPai : function(){
-        this.paiListNode.removeAllChildren();
         this.refreShouPaiPos()
         // this.refreCaiShenColor();
     },

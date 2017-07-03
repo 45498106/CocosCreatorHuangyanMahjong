@@ -512,7 +512,7 @@
     "_position": {
       "__type__": "cc.Vec2",
       "x": 0,
-      "y": 2
+      "y": 30
     },
     "_skewX": 0,
     "_skewY": 0,
@@ -537,7 +537,7 @@
     "_N$file": null,
     "_isSystemFontUsed": true,
     "_spacingX": 0,
-    "_N$string": "ssssssssss",
+    "_N$string": "请稍后再试",
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
     "_N$fontFamily": "Arial",
@@ -696,7 +696,7 @@
     "_position": {
       "__type__": "cc.Vec2",
       "x": 0,
-      "y": -150
+      "y": -125
     },
     "_skewX": 0,
     "_skewY": 0,

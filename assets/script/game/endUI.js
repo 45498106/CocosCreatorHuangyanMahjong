@@ -335,7 +335,12 @@ cc.Class({
     },
 
     gotoReadyUI : function(){
-
+        gameManager.cleanData();
+        gameManager.cleanPlayerPaiData();
+        this.gameUI.showReadyNode();
+        this.endRoundN.active    = false;
+        this.singleRoundN.active = false;
+        this.totalRoundN.active  = false;
     },
 
     //是否还能继续打牌

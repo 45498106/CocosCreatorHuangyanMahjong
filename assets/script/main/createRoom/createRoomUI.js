@@ -1,6 +1,8 @@
 var NetMessageMgr   = require("NetMessageMgr");
 var GameDataMgr     = require("GameDataMgr");
+var GameDefine      = require("GameDefine");
 var NetProtocolList = require("NetProtocolList");
+var log             = require("utils").log;
 
 cc.Class({
     extends: cc.Component,
@@ -16,71 +18,75 @@ cc.Class({
 
     // use this for initialization
     onLoad: function () {
-        this.initFunc();
+        this.initUI();
     },
 
-    initFunc : function(){
+    initUI : function(){
+        var creatRoomData = GameDefine.CREATROOM_TYPE;
+        this.setUIData(this.tishiTG, creatRoomData.NoticeType);
+        this.setUIData(this.jushuTG, creatRoomData.GameNum);
+        this.setUIData(this.shouxufeiTG, creatRoomData.PaymentMethod);
 
     },
+
+    setUIData : function(modeNode, modeData){
+        var startIndex = 0;
+        for(let k in modeData){
+            startIndex += 1;
+            var childN = modeNode.getChildByName("toggle" + startIndex);
+            var content = childN.getChildByName("content");
+            content.getComponent(cc.Label).string = modeData[k].name;
+            childN.chooseData = modeData[k];
+        }
+
+    },
+
+
+
 
     onBtnCreateRoomClicked : function(){
-        var data = {};
-        var nameArray = new Array();
-        nameArray[0] = "intelligent";
-        nameArray[1] = "profession";
-        nameArray[2] = "4局";
-        nameArray[3] = "8局";
-        nameArray[4] = "16局";
-        nameArray[5] = "房主支付";
-        nameArray[6] = "平均支付";
-        nameArray[7] = "冠军支付";
-
-        data.mode = mode;
-        var mode; //选择模式
-        for(let i=1; i<3; i++){
-            var tsCheckmark = this.tishiTG.getChildByName("toggle"+i).getChildByName("checkmark");
-            if(tsCheckmark.active == true)
-                mode = nameArray[i-1];
-        }
-        data.mode = mode;
-
-        var number; //选择局数
-        for(let i=1; i<4; i++){
-            var jsCheckmark = this.jushuTG.getChildByName("toggle"+i).getChildByName("checkmark");
-            if(jsCheckmark.active == true)
-                number = nameArray[i+1];
-        }
-        data.num = number;
-
-        var fee; //选择手续费支付方式
-        for(let i=1; i<4; i++){
-            var sxfCheckmark = this.shouxufeiTG.getChildByName("toggle"+i).getChildByName("checkmark");
-            if(sxfCheckmark.active == true)
-                fee = nameArray[i+4];
-        }
-        data.fee = fee;
-
-        var isOnlook; //是否允许旁观
-        isOnlook = this.pangguanTG.getChildByName("toggle").getChildByName("checkmark").active;
-        data.isOnlook = isOnlook;
-
-        this.creatGameRoomToServer(data);
-    },
-
-    creatGameRoomToServer : function(data){
         var roomInfo = {
                 NoticeType : 2,
                 GameNum : 1,
                 PaymentMethod : 1,
-                data : data,
         }
+        for(let i=1; i<3; i++){
+            var tsCheckmark = this.tishiTG.getChildByName("toggle"+i).getChildByName("checkmark");
+            if(tsCheckmark.active == true){
+                roomInfo.NoticeType = tsCheckmark.parent.chooseData.id;
+            }
+               
+        }
+
+        for(let i=1; i<4; i++){
+            var jsCheckmark = this.jushuTG.getChildByName("toggle"+i).getChildByName("checkmark");
+            if(jsCheckmark.active == true){
+                roomInfo.GameNum = jsCheckmark.parent.chooseData.id;
+            }
+        }
+
+        for(let i=1; i<4; i++){
+            var sxfCheckmark = this.shouxufeiTG.getChildByName("toggle"+i).getChildByName("checkmark");
+            if(sxfCheckmark.active == true){
+                roomInfo.PaymentMethod = sxfCheckmark.parent.chooseData.id;
+            }
+        }
+
+        // var isOnlook; //是否允许旁观
+        // isOnlook = this.pangguanTG.getChildByName("toggle").getChildByName("checkmark").active;
+        // data.isOnlook = isOnlook;
+
+        this.creatGameRoomToServer(roomInfo);
+    },
+
+    creatGameRoomToServer : function(roomInfo){
+        log("this  is roomInfo", roomInfo)
+        GameDataMgr.setRoomMaster(true);
         GameDataMgr.setRoomInfo(roomInfo);
         var sendData = {
             PlayerID : GameDataMgr.getUserID(),//玩家帐号
             RoomInformation   : roomInfo,//房间信息
         }
-        cc.log("send NetProtocolList", NetProtocolList)
-        require("GameDataMgr").setRoomMaster(true);
         NetMessageMgr.send(NetProtocolList.CreateRoomMessageNum.netID, sendData);
     },
 

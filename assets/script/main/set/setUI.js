@@ -12,15 +12,8 @@ cc.Class({
        bindPhoneLayerNode : cc.Node,
        writeOffBtnNode    : cc.Node,
        biankuang          : cc.Node,
-       phoneNumNode       : cc.Node,
-       verificationCode   : cc.EditBox,
        getVCBnt           : cc.Node,
        getVCBntIng        : cc.Node,
-       bindLaelLabel      : cc.Label,
-       btnBindLabel       : cc.Label,
-       bindedPhoneNumLabel: cc.Label,
-       btnBindPhoneNode   : cc.Node,
-
        alertPrefab        : cc.Prefab,
        toastPrefab        : cc.Prefab,
     },
@@ -31,10 +24,10 @@ cc.Class({
     },
 
     setInitFunc : function(){
-        this.soundToggle = this.biankuang.getChildByName("switchBox").getChildByName("soundToggle");
-        this.musicToggle = this.biankuang.getChildByName("switchBox").getChildByName("soundToggle");
-        this.soundToggle.getComponent(cc.Toggle).isChecked = UserLocalData.getSoundSwitch();
-        this.musicToggle.getComponent(cc.Toggle).isChecked = UserLocalData.getMusicSwitch();
+        var soundToggle = this.biankuang.getChildByName("switchBox").getChildByName("soundToggle");
+        var musicToggle = this.biankuang.getChildByName("switchBox").getChildByName("musicToggle");
+        soundToggle.getComponent(cc.Toggle).isChecked = UserLocalData.getSoundSwitch();
+        musicToggle.getComponent(cc.Toggle).isChecked = UserLocalData.getMusicSwitch();
         this.btnStatusChanged(UserLocalData.getAudioKind());
     },
 
@@ -63,7 +56,7 @@ cc.Class({
     },
     //选择语言按钮状态变化
     btnStatusChanged : function(lanKind){
-        var scrollView = this.bindPhoneLayerNode.getChildByName("scrollView");
+        var scrollView = this.languageLayerNode.getChildByName("scrollView");
         var lanListAll = scrollView.getChildByName("view").getChildByName("content")
         var lanListArr = new Array();
         for(let i=0; i<4; i++)
@@ -87,22 +80,28 @@ cc.Class({
     onBtnBindPhoneClicked : function(){
         this.bindPhoneLayerNode.active = true;
         this.writeOffBtnNode.opacity = 150;
-        if(this.bindLaelLabel.string == "未绑定手机"){
+        var phoneNumber = this.bindPhoneLayerNode.getChildByName("phoneNumber");
+        var phoneBox = this.biankuang.getChildByName("bindphoneBox").getChildByName("phoneBox");
+        var bindLabel = phoneBox.getChildByName("bindLabel").getComponent(cc.Label);
+        var phoneNumLabel = phoneNumber.getChildByName("phoneNum").getComponent(cc.Label);
+        var btnBindPhone = this.bindPhoneLayerNode.getChildByName("associatedPhoneBtn").getChildByName("label");
+        if(bindLabel.string == "未绑定手机"){
             this.isBindPhone = true;
-            this.bindedPhoneNumLabel.string = "";
-            this.phoneNumNode.active = true;
-            this.btnBindPhoneNode.getChildByName("label").getComponent(cc.Label).string = "绑定手机";
+            phoneNumLabel.string = "";
+            phoneNumber.getChildByName("pEditBox").active = true;
+            btnBindPhone.getComponent(cc.Label).string = "绑定手机";
         } else {
             this.isBindPhone = false;
-            this.bindedPhoneNumLabel.string = this.phoneNum;
-            this.phoneNumNode.active = false;
-            this.btnBindPhoneNode.getChildByName("label").getComponent(cc.Label).string = "解除绑定";
+            phoneNumLabel.string = this.phoneNum;
+            phoneNumber.getChildByName("pEditBox").active = false;
+            btnBindPhone.getComponent(cc.Label).string = "解除绑定";
         }
     },
 
     //发送验证码按钮
     onBtnSendVerificationCode : function(){
-        var phoneNum = this.phoneNumNode.getComponent(cc.EditBox).string;
+        var phoneNumber = this.bindPhoneLayerNode.getChildByName("phoneNumber")
+        var phoneNum = phoneNumber.getChildByName("pEditBox").getComponent(cc.EditBox).string;
         this.phoneNum = phoneNum;
         // !isNaN(Number(phoneNum)) 判断字符串中所以字符是否都为数字
         //判断手机是否合法
@@ -113,7 +112,6 @@ cc.Class({
             this.verificationCodeSchedule();
             //向服务器发送手机验证码请求
             // NetMessageMgr.send(NetProtocolList.验证码请求.netID, xxx);
-            this.node.parent.getChildByName("mainUI").getComponent("mainUI").onGetVerificationCodeAck();
         } else {
             this.alertPrefabFunc(this.alertPrefab, "please_enter_valid_phone_number");
         }
@@ -147,25 +145,29 @@ cc.Class({
 
     //绑定手机或者解绑手机
     onBtnAssociatedPhone : function(){
-        var verCode = this.verificationCode.string;
-        if(verCode === "")
+        var verificationCode = this.bindPhoneLayerNode.getChildByName("verificationCode");
+        var verEditBox = verificationCode.getChildByName("pEditBox").getComponent(cc.EditBox);
+        var bindphoneBox = this.biankuang.getChildByName("bindphoneBox");
+        var bindLabel = bindphoneBox.getChildByName("phoneBox").getChildByName("bindLabel").getComponent(cc.Label);
+        var btnBindLabel = bindphoneBox.getChildByName("bindBtn").getChildByName("name").getComponent(cc.Label);
+        if(verEditBox.string === "")
             this.alertPrefabFunc(this.alertPrefab, "please_enter_verification_code");
-        else if(verCode == this.verCode){
+        else if(verEditBox.string == this.verCode){
             if(this.isBindPhone == true){
                 this.alertPrefabFunc(this.toastPrefab, "success_bind_phone");
-                this.bindLaelLabel.string = this.phoneNum;
-                this.btnBindLabel.string = "解 绑";
+                bindLabel.string = this.phoneNum;
+                btnBindLabel.string = "解 绑";
             } else {
                 this.alertPrefabFunc(this.toastPrefab, "success_cancel_bind_phone");
-                this.bindLaelLabel.string = "未绑定手机";
-                this.btnBindLabel.string = "绑 定";
+                bindLabel.string = "未绑定手机";
+                btnBindLabel.string = "绑 定";
             }
             this.unschedule(this.vcSchedule);
             this.onBtnCloseBindPhoneClicked();
             this.getVCBnt.active = true;
             this.getVCBntIng.active = false;
             this.getVCBnt.getChildByName("label").getComponent(cc.Label).string = "获取验证码";
-            this.verificationCode.string = "";
+            verEditBox.string = "";
         }
         else
             this.alertPrefabFunc(this.alertPrefab, "please_enter_correct_verification_code");
@@ -173,8 +175,10 @@ cc.Class({
 
     //音效音乐开关设置
     onBtnSoundMusicSet : function(event, num){
+        var soundToggle = this.biankuang.getChildByName("switchBox").getChildByName("soundToggle");
+        var musicToggle = this.biankuang.getChildByName("switchBox").getChildByName("musicToggle");
         if(num === "sound"){
-            var mark = this.soundToggle.getComponent(cc.Toggle).isChecked;
+            var mark = soundToggle.getComponent(cc.Toggle).isChecked;
             if(mark){
                 UserLocalData.setSoundSwitch(true);
                 Audio.resumeSound();
@@ -183,7 +187,7 @@ cc.Class({
                 Audio.stopSound();
             }
         } else {
-            var mark = this.musicToggle.getComponent(cc.Toggle).isChecked;
+            var mark = musicToggle.getComponent(cc.Toggle).isChecked;
             if(mark){
                 UserLocalData.setMusicSwitch(true);
                 Audio.resumeMusic();
@@ -205,7 +209,7 @@ cc.Class({
         var promptBox = cc.instantiate(prefab);
         promptBox.setPosition(cc.p(0, 0));
         this.setNode.addChild(promptBox);
-        if(prefab.name == "alert") {
+        if(prefab.name == "alertPrefab") {
             if (msg || cs) promptBox.getComponent("alertUI").getMessageFrom(msg, cs);
         } else if (prefab.name == "toastPrefab") {
             if (msg || cs) promptBox.getComponent("toastPrefab").getMessageFrom(msg, cs);

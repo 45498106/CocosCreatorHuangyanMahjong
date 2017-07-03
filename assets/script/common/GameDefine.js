@@ -104,6 +104,47 @@ GameDefine.GAME_TYPE = {
 	}
 }
 
+GameDefine.CREATROOM_TYPE = {
+	NoticeType : {
+		1 : {
+			id : 1,
+			name : "智能提示: 提示胡牌类型、最大翻数和所胡牌的张数",
+		},
+		2 : {
+			id : 2,
+			name : "专业模式: 只提示是否胡牌",
+		} 
+	},
+	GameNum : {
+		4 : {
+			id : 4,
+			name : "4局",
+		},
+		8 : {
+			id : 8,
+			name : "8局",
+		},
+		16 : {
+			id : 16,
+			name : "16局",
+		},
+	},
+	PaymentMethod : {
+		1 : {
+			id : 1,
+			name : "房主支付",
+		},
+		2 : {
+			id : 2,
+			name : "平摊支付",
+		},
+		3 : {
+			id : 3,
+			name : "赢家支付",
+		},
+	}
+}
+
 //胡数 localText
 GameDefine.HSTEXT = {
         dh :"底胡",

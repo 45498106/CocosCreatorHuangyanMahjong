@@ -51,6 +51,9 @@ GameManager.init = function(){
 }
 
 GameManager.onDestroy  = function(){
+	this.cleanData();
+	this.doDestoryCB();
+	GameDataMgr.cleanGameData();
 	var mmgr    = NetMessageMgr;
 	var netList = NetProtocolList;
 	mmgr.rmMessageCB(netList.EnterRoomNoticeNum.netID,this.onUserEnterRoom);
@@ -95,9 +98,34 @@ GameManager.newRound = function(paiData){
 }
 
 GameManager.cleanData = function(){
-	this.startPaiData = undefined;
-	this.meDirection  = undefined;
-	this.CaiShenPai   = undefined
+	this.startPaiData  = undefined;
+	this.meDirection   = undefined;
+	this.CaiShenPai    = undefined;
+	this.DeskPosIdxs   = undefined;
+	this.curChuPaiUdid = undefined;
+	this.lastChuPaiDir = undefined;
+	this.rounAnimFinished = undefined;
+}
+
+GameManager.cleanPlayerPaiData = function(){
+	for(let k in this.playerList){
+		let player = this.playerList[k];
+		player.cleanPaiData();
+	}
+}
+
+
+GameManager.addDestoryCB = function(cb, env){
+	this.DestoryCBList = this.DestoryCBList || [];
+	this.DestoryCBList.push({cb:cb, env:env});
+}
+
+GameManager.doDestoryCB = function(){
+	for(let i = 0; i< this.DestoryCBList.length; i++){
+		let cbObj = this.DestoryCBList[i];
+		cbObj.cb.call(cbObj.env);
+	}
+	this.DestoryCBList = undefined;
 }
 
 
@@ -155,7 +183,6 @@ GameManager.refreshDeskPlayersData = function () {
 
 //给玩家设置数据
 GameManager.setPlayerData = function (playerInfo, pos) {
-	cc.log("--setPlayerData------" + pos, playerInfo)
 	var deskType = this.getDeskTypeByPos(pos)
 	var player   = this.playerList[deskType];
 	player.setUserData(playerInfo);
@@ -164,15 +191,7 @@ GameManager.setPlayerData = function (playerInfo, pos) {
 //获取玩家在本地显示的方位
 //PlayerIdx 座位索引 数据为 0 1 2 3
 GameManager.getDeskTypeByPos = function(PlayerIdx){
-	if(!this.DeskPosIdxs){
-		var meIdx = GameDataMgr.getDeskPosIndex();
-		this.DeskPosIdxs                = [];
-		this.DeskPosIdxs[meIdx]         = GameDefine.DESKPOS_TYPE.XIA;
-		this.DeskPosIdxs[(meIdx + 1)%4] = GameDefine.DESKPOS_TYPE.YOU;
-		this.DeskPosIdxs[(meIdx + 2)%4] = GameDefine.DESKPOS_TYPE.SHANG;
-		this.DeskPosIdxs[(meIdx + 3)%4] = GameDefine.DESKPOS_TYPE.ZUO;
-	}
-	return this.DeskPosIdxs[PlayerIdx]
+	return GameDataMgr.getDeskPosIdxs()[PlayerIdx]
 }
 
 
@@ -212,6 +231,7 @@ GameManager.prepareNoticeMessage = function (data) {
 //新的一局开始发牌
 GameManager.startFaPai = function(paiData) {
 	this.startPaiData = paiData;
+	this.checkPaiDataReady();
 }
 
 //隐藏所有的
@@ -228,10 +248,15 @@ GameManager.isCaiShenPai = function(paiID){
 }
 
 GameManager.checkPaiDataReady = function(){
-	if(!this.startPaiData || !this.meDirection || !this.CaiShenPai){
-		return;		
+	var paiDataIsOk = false;
+	if(this.startPaiData && this.meDirection  && this.CaiShenPai){
+		paiDataIsOk = true;
 	}
-	this.newRound();
+	if(this.rounAnimFinished && paiDataIsOk) {
+		this.rounAnimFinished = undefined;
+		this.newRound();
+	}
+	
 }
 
 GameManager.setStartPaiData = function(){
@@ -289,7 +314,8 @@ GameManager.MoPaiNotice = function(data){
 
 //离开房间
 GameManager.exiteRoom = function(){
-	 cc.director.loadScene("main");
+	log("--GameManager.exiteRoom---")
+	cc.director.loadScene("main");
 }
 
 //定财神通知

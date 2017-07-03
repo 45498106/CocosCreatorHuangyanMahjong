@@ -28,6 +28,12 @@ playerCls.prototype.setIsZhuang = function(isZhuang){
     }
 }
 
+playerCls.prototype.cleanPaiData = function(){
+    log("-this.playerUI--", this.playerUI)
+    this.playerUI.cleanPaiNode();
+    this.paiDataObj = undefined;
+}
+
 playerCls.prototype.setPlayStatus = function(status) {
     this.dapaiStatus = status;
 }
@@ -73,6 +79,7 @@ playerCls.prototype.init = function(playerUI, desPosType, gameUI){
 
 //设置开局发的牌
 playerCls.prototype.setStartPaiData = function(paiData){
+    log("-----layerCls.prototype.setSt-----")
     var paiObjList = []
     var addCount = this.isZhuang ? paiData.length -1 : paiData.length;
     for(let i = 0; i < addCount; i++){

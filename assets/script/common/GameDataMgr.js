@@ -1,4 +1,6 @@
-var log = require("utils").log;
+var log        = require("utils").log;
+var GameDefine = require("GameDefine");
+
 var gameData = {
     userId : 4,
     roomInfo : {},
@@ -8,7 +10,9 @@ var gameData = {
 
 module.exports = {
     cleanGameData : function(){
-        gameData = {};
+        gameData.roomInfo     = {};
+        gameData.roomPlayers  = {};
+        gameData.isRoomMaster = false;
     },
     setRoomMaster : function(master){
         gameData.isRoomMaster = master
@@ -39,6 +43,7 @@ module.exports = {
             var playerData = playerArray[i];
             if(playerData.UserId === this.getUserID()){
                 this.setDeskPosIndex(playerData.PlayerIdx);
+                this.refreshDeskType();
             }
             gameData.roomPlayers[playerData.PlayerIdx] = playerData;
         }
@@ -48,6 +53,17 @@ module.exports = {
     },
     getRoomPlayers : function(){
     	return gameData.roomPlayers;  
+    },
+    refreshDeskType : function() {
+        gameData.DeskPosIdxs = [];
+        var meIdx = this.getDeskPosIndex();
+        gameData.DeskPosIdxs[meIdx]         = GameDefine.DESKPOS_TYPE.XIA;
+        gameData.DeskPosIdxs[(meIdx + 1)%4] = GameDefine.DESKPOS_TYPE.YOU;
+        gameData.DeskPosIdxs[(meIdx + 2)%4] = GameDefine.DESKPOS_TYPE.SHANG;
+        gameData.DeskPosIdxs[(meIdx + 3)%4] = GameDefine.DESKPOS_TYPE.ZUO;
+    },
+    getDeskPosIdxs : function(){
+        return gameData.DeskPosIdxs;
     },
 
 

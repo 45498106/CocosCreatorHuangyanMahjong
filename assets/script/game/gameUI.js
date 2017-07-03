@@ -15,7 +15,7 @@ cc.Class({
         paiAltas          : cc.SpriteAtlas,
         paiPrefab         : cc.Prefab,
         eatEffectPrefab   : cc.Prefab,
-        readyLogicN       : cc.Node, //准备游戏UI的脚本节点,
+        readyN            : cc.Node, //准备游戏UI的脚本节点,
         lunpanN           : cc.Node, //中间的东南西北
         overallEffN       : cc.Node, //全局特效
         eatOptN           : cc.Node,
@@ -23,9 +23,9 @@ cc.Class({
         EndUI             : cc.Node,
         eatPaiDetailPrefab: cc.Prefab,
         eatMoreOptN       : cc.Node,
-        votingNode        : cc.Node, //voting leave room;
         alertPrefab       : cc.Prefab, //alert tips
         popWindowN        : cc.Node,
+        readyLogiceN      : cc.Node,
     },
 
     // use this for initialization
@@ -36,6 +36,8 @@ cc.Class({
         this.caiShenN.active = false;
         this.shengPaiEffN    = this.overallEffN.getChildByName("shengPaiEff")
         this.reduceLabel     = this.lunpanN.getChildByName("residue").getComponent(cc.Label);
+        this.votingNode      = this.popWindowN.getChildByName("votingPop");
+        this.outRoomSureN    = this.popWindowN.getChildByName("votingSure");
         this.initEatListPrefab();
     },
 
@@ -146,11 +148,6 @@ cc.Class({
         this.lunpanN.active = true;
     },
 
-//     //新的一轮
-//     onNewRoundClicked() {
-//         gameManager.newRound();
-//     },
-
     //隐藏所有亮的的方向
     hideAllDiection : function(){
         var directionN = this.lunpanN.getChildByName("curDirection");
@@ -188,9 +185,9 @@ cc.Class({
 
     showReadyNode : function(){
         this.lunpanN.active = false;
-        var readyScript = this.readyLogicN.getComponent("readyUI");
-        readyScript.refreReadyData();
-        readyScript.showIn();
+        this.readyN.active  = true;
+        this.readyLogiceN.getComponent("readyUI").refreRoomData();
+        this.readyN.setPosition(0, 0);
     },
 
     //播放生牌阶段特效
@@ -211,6 +208,15 @@ cc.Class({
 
     //
     onBtnBackClicked : function(){
+        this.outRoomSureN.active = true;
+    },
+
+     onBtnExitCancelClicked : function(){
+        this.outRoomSureN.active = false;
+    },
+
+    onBtnExitSureClicked : function(){
+        this.outRoomSureN.active = false;
         gameManager.playerWantToOut();
     },
 

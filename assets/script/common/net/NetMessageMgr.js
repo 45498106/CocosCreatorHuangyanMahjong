@@ -163,6 +163,10 @@ var NetMessageMgr = {
         }else {
             log("server hit respone")
         }
+        if(NetProtocolList.FaPaiMessageNum.netID == netID){
+            log("--------FaPaiMessageNum------")
+            log(this.messageCBList[netID]);
+        }
         
        
         //heart beat 

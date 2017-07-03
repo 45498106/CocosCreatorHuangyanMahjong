@@ -16,11 +16,12 @@ cc.Class({
     onLoad : function(){
         this.initUI();
         this.registerMessage();
-        this.refreBtnReady();
         this.btnBack.active = false;
+        this.readyN.getChildByName('btnUnReady').active = false;
+        gameManager.addDestoryCB(this.meDestory, this);
     },
 
-    onDestory : function(){
+    meDestory : function(){
         this.unRegisterMesage();
     },
 
@@ -49,17 +50,12 @@ cc.Class({
         nmm.rmMessageCB(npl.FaPaiMessageNum.netID, this.startFaPai)
     },
 
-
-    showIn : function() {
-        this.readyN.active = true;
-        this.readyN.getChildByName('btnUnReady').active = false;
-    },
-
     onEveryOneReady : function(){
         var self = this;
         var moveAct = cc.moveTo(0.3, cc.p(0, -800));
         this.readyN.runAction(cc.sequence(moveAct, cc.callFunc(function(){
             self.readyN.active = false;
+            gameManager.rounAnimFinished = true;
             gameManager.checkPaiDataReady();
 
         })))
@@ -89,11 +85,23 @@ cc.Class({
         this.unPrepareToPlay();
     }, 
 
-    refreReadyData : function(){
+    refreRoomData : function(){
         var roomInfo = GameDataMgr.getRoomInfo();
         var centerN  = this.readyN.getChildByName("center");
         var roomIdN  = centerN.getChildByName("roomNumber").getChildByName('content');
-        roomIdN.getComponent(cc.Label).string = roomInfo.RoomID;
+        var roomInfoN= centerN.getChildByName("info");
+         roomIdN.getComponent(cc.Label).string = roomInfo.RoomID;
+        var tipsContent   = roomInfoN.getChildByName("tips").getChildByName("content");
+        var countContent  = roomInfoN.getChildByName("playCount").getChildByName("content");
+        var chargeContent = roomInfoN.getChildByName("charge").getChildByName("content");
+        var localDefine   = GameDefine.CREATROOM_TYPE;
+        var roomTypeName  = localDefine.NoticeType[roomInfo.NoticeType].name;
+        var gameNumName   = localDefine.GameNum[roomInfo.GameNum].name;
+        var payTypeName   = localDefine.PaymentMethod[roomInfo.PaymentMethod].name;
+        tipsContent.getComponent(cc.Label).string   = roomTypeName
+        countContent.getComponent(cc.Label).string  = gameNumName
+        chargeContent.getComponent(cc.Label).string = payTypeName
+        this.refreBtnReady();
     },
 
     refreBtnReady : function(){

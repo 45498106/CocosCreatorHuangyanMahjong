@@ -14,7 +14,8 @@ Audio.playMusic = function(name){
 //播放指定音效
 Audio.playSound = function(name, loop, volumn){
     var languageKind = UserLocalData.getAudioKind();
-    var cPath = Audio.soundPath + languageKind +"/" + languageKind + name;
+    var sex = UserLocalData.getSex();
+    var cPath = Audio.soundPath + languageKind +"/" + sex + "_" + name;
     if(UserLocalData.getSoundSwitch() === false) return;
     this.soundID = cc.audioEngine.play(cPath, loop, volumn);
 }

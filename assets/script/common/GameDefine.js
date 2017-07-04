@@ -23,6 +23,12 @@ GameDefine.PLAYER_READY = {
 	READY   : 3,//已经准备
 }
 
+GameDefine.VOTESTATUS = {
+	NOVOTE : 0,
+	AGREE : 1,
+	
+}
+
 //server 筒1条2万3字4风5
 //本地筒1万2条3特殊4
 GameDefine.ServerToLocalType = {

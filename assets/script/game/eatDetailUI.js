@@ -12,15 +12,17 @@ cc.Class({
     
     onSelfCilcked : function(){
         if(!this.canCilcked){return}
-        this.gameUI.hideMoreChiUI(this.eatData);
+        this.gameUI.hideMoreChiUI();
+        this.gameUI.sendEatPaiToSerever(this.eatObj, this.eatData);
     },
     
-    init : function(gameUI, eatData, chiID){
+    init : function(gameUI, eatData, chiID, eatObj){
         var self = this;
         setTimeout(function(){
             self.canCilcked = true;
         }, 1000)
         this.gameUI      = gameUI;
+        this.eatObj      = eatObj;
         this.eatData     = eatData;
         this.disPlayList = [chiID];
         this.disPlayList = eatData.concat(this.disPlayList);

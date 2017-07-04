@@ -20,10 +20,10 @@ var UIControlData = function(){
         return this.GangPos[gIndex +"+"+ index];
     }
     this.getZorder  = function(gIndex, index){
-        return gIndex * 10 + parseInt(index) + 1;
+        return gIndex * 10 + parseInt(index) + 100;
     }
     this.getShouZorder = function(index){
-        return 50 + parseInt(index);
+        return 180 + parseInt(index);
     }
 }
 
@@ -324,12 +324,12 @@ var youControl = function(){
         return cc.p(0, index * this.showPaiWidth + this.PengLen);
     }
     this.getShouZorder  = function(index){
-        return  20  - parseInt(index);
+        return  200  - parseInt(index);
     }
     this.getZorder  = function(gIndex, index){
         index = parseInt(index);
         index = index === 3 ? -1 : index; 
-        return 100 - gIndex * 10 - index;
+        return 200 - gIndex * 10 - index;
     }
     this.getNewShowPaiPos = function(index){
         var pos = this.getShouPaiPos(index);

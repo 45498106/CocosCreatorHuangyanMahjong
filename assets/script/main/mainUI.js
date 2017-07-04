@@ -1,7 +1,7 @@
 var utils           = require("utils");
 var log             = utils.log;
 var NetMessageMgr   = require("NetMessageMgr");
-var GameDataMgr     = require("GameDataMgr");
+var GamePlayDataMgr     = require("GamePlayDataMgr");
 var NetProtocolList = require("NetProtocolList");
 var Audio           = require("Audio");
 
@@ -20,6 +20,8 @@ var mainUI = cc.Class({
         bulletinNode    : cc.Node,    //系统公告
         activityNode    : cc.Node,    //活动
         webview         : cc.WebView, //活动网址
+        alertPrefab     : cc.Prefab,  //提示框
+        toastPrefab     : cc.Prefab,  //提示
     },
 
     // use this for initialization
@@ -28,10 +30,10 @@ var mainUI = cc.Class({
         this.regisgerNetMessage();
         this.refreUserID();
 
-        // this.onDeviceFunc();
+        this.onDeviceFunc();
         this.getAnnouncementNum();
 
-        Audio.playMusic("back.mp3");
+        Audio.playMusic("BGM-mainUI.mp3");
     },
 
     onDestroy : function(){
@@ -44,18 +46,44 @@ var mainUI = cc.Class({
     },
     // 不同设备区分
     onDeviceFunc : function(){
-        var ua = navigator.userAgent.toLowerCase();
-        if(/iphone|ipad|ipod/.test(ua)){
-            log("=== 这是ios设备 ===");
-        } else if(/android/.test(ua)){
-            log("=== 这是android设备 ===");
-            jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity", "test", "(Ljava/lang/String;)V", "cocos creator.");
-            var result = jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity", "returnJsSum", "(I)I", 3);
-            log("===== result", result);
-        }else{
-            log("=== 这是开发设备 ===");
+        // var ua = navigator.userAgent.toLowerCase();
+        // var data;
+        // if(/iphone|ipad|ipod/.test(ua)){
+        //     log("=== 这是ios设备 ===");
+        // } else if(/android/.test(ua)){
+        //     log("=== 这是android设备 ===");
+        //     jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity", "test", "(Ljava/lang/String;)V", "cocos creator.");
+        //     var result = jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity", "returnJsSum", "(I)I", 1, 5);
+        //     cc.log("----- result = ", result)
+        //     // data = "这是android设备 + " + result;
+        //     // this.alertPrefabFunc(this.alertPrefab, data);
+        // }else{
+        //     log("=== 这是开发设备 ===");
+        //     data = "这是android设备 + " + "result";
+        //     cc.log(data)
+        //     this.alertPrefabFunc(this.toastPrefab, data)
+        // }
+
+        // jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity", "test", "(Ljava/lang/String;)V", "cocos creator.");
+        // var result = jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity", "returnJsSum", "(I)I", 1, 5);
+        // cc.log("----- result = ", result)
+
+        cc.log("---- this is 2017.7.4 ----")
+    },
+
+    //弹出提示框
+    alertPrefabFunc : function(prefab, msg, cs) {
+        var promptBox = cc.instantiate(prefab);
+        promptBox.setPosition(cc.p(0, 0));
+        this.canvasNode.addChild(promptBox);
+        if(prefab.name == "alertPrefab") {
+            if (msg || cs) promptBox.getComponent("alertUI").getMessageFrom(msg, cs);
+        } else if (prefab.name == "toastPrefab") {
+            if (msg || cs) promptBox.getComponent("toastPrefab").getMessageFrom(msg, cs);
         }
     },
+
+
     //向服务器请求公告信息
     getAnnouncementNum : function(){
         var ScrollNewsID = {};
@@ -155,13 +183,13 @@ var mainUI = cc.Class({
 
     onChangeUserID : function() {
         var id = this.testN.getChildByName("editBox").getComponent(cc.EditBox).string
-        GameDataMgr.setUserID(parseInt(id));
+        GamePlayDataMgr.setUserID(parseInt(id));
         this.refreUserID();
     },
 
     refreUserID : function(){
         var idLabel = this.testN.getChildByName("layer").getChildByName("name").getComponent(cc.Label);
-        var contentStr = "您的用户ID是: " + GameDataMgr.getUserID(); 
+        var contentStr = "您的用户ID是: " + GamePlayDataMgr.getUserID(); 
         idLabel.string = contentStr;
     },
 
@@ -216,29 +244,29 @@ var mainUI = cc.Class({
             roomNumber += num; 
         })
         var roomID = parseInt(roomNumber);
-        GameDataMgr.getRoomInfo().RoomID = roomID;
+        GamePlayDataMgr.getRoomInfo().RoomID = roomID;
         var sendData = {
-            PlayerID : GameDataMgr.getUserID(),//玩家帐号
+            PlayerID : GamePlayDataMgr.getUserID(),//玩家帐号
             RoomID   : roomID,//房间id
         }
-        require("GameDataMgr").setRoomMaster(false);
+        require("GamePlayDataMgr").setRoomMaster(false);
         NetMessageMgr.send(NetProtocolList.EnterRoomMessageNum.netID, sendData);
     },
 
     //返回房间信息
     onRoomMessageAck : function(data){
         log("-onRoomMessageAck---", data)
-        data.RoomInformation.RoomID = GameDataMgr.getRoomInfo().RoomID;
-        GameDataMgr.setRoomInfo(data.RoomInformation);
-        GameDataMgr.initRoomPlayers(data.PlayersInfo);
+        data.RoomInformation.RoomID = GamePlayDataMgr.getRoomInfo().RoomID;
+        GamePlayDataMgr.setRoomInfo(data.RoomInformation);
+        GamePlayDataMgr.initRoomPlayers(data.PlayersInfo);
         this.gotoGameRoom();
     },
     //创建房间信息
     onCreatRoomAck : function(data){
         log("-onCreatRoomAck-创建房间信息--", data)
-        GameDataMgr.getRoomInfo().RoomID = data.RoomID;       
+        GamePlayDataMgr.getRoomInfo().RoomID = data.RoomID;       
         var playInfoList = [data.PlayerInfo];
-        GameDataMgr.initRoomPlayers(playInfoList);
+        GamePlayDataMgr.initRoomPlayers(playInfoList);
         this.gotoGameRoom();
     },
 

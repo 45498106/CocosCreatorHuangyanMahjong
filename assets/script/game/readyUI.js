@@ -1,4 +1,4 @@
-var GameDataMgr     = require("GameDataMgr");
+var GamePlayDataMgr     = require("GamePlayDataMgr");
 var NetMessageMgr   = require("NetMessageMgr");
 var NetProtocolList = require("NetProtocolList");
 var gameManager     = require("gameManager");
@@ -10,23 +10,20 @@ cc.Class({
     properties: {
         readyN : cc.Node, 
         reportN : cc.Node,
-        btnBack : cc.Node,
     },
 
     onLoad : function(){
         this.initUI();
         this.registerMessage();
-        this.btnBack.active = false;
         this.readyN.getChildByName('btnUnReady').active = false;
-        gameManager.addDestoryCB(this.meDestory, this);
     },
 
-    meDestory : function(){
+    onDestroy : function(){
         this.unRegisterMesage();
     },
 
     initUI : function(){
-        var isMaster = GameDataMgr.getRoomMaster();
+        var isMaster = GamePlayDataMgr.getRoomMaster();
         this.readyN.getChildByName("btnDissolve").active = isMaster;
         this.readyN.getChildByName("btnOut").active = !isMaster;
     },
@@ -71,7 +68,6 @@ cc.Class({
 
     startFaPai : function(){
         this.onEveryOneReady();
-        this.btnBack.active = true;
     },
 
     //准备
@@ -86,7 +82,7 @@ cc.Class({
     }, 
 
     refreRoomData : function(){
-        var roomInfo = GameDataMgr.getRoomInfo();
+        var roomInfo = GamePlayDataMgr.getRoomInfo();
         var centerN  = this.readyN.getChildByName("center");
         var roomIdN  = centerN.getChildByName("roomNumber").getChildByName('content');
         var roomInfoN= centerN.getChildByName("info");
@@ -105,34 +101,41 @@ cc.Class({
     },
 
     refreBtnReady : function(){
-        var mePlayerData = GameDataMgr.getSelfPlayerData();
+        var mePlayerData = GamePlayDataMgr.getSelfPlayerData();
         var isReady      = (mePlayerData.Status === GameDefine.PLAYER_READY.READY)
         this.readyN.getChildByName('btnReady').active = !isReady; 
+    },
+
+    hideRoomOptBtn : function(){
+        this.readyN.getChildByName("btnDissolve").active = false;
+        this.readyN.getChildByName("btnOut").active      = false;
+        this.readyN.getChildByName('btnInvite').active   = false; 
     },
 
     /*-----------------------------  Server Message -------------------------*/
     prepareToPlay : function (argument) {
         var content = {};
-        content.PlayerID = GameDataMgr.getUserID();
+        content.PlayerID = GamePlayDataMgr.getUserID();
         NetMessageMgr.send(NetProtocolList.PrepareMessageNum.netID, content);
     },
 
     prepareCallback : function (content) {
         this.reportN.active = false;
-        GameDataMgr.getSelfPlayerData().Status = GameDefine.PLAYER_READY.READY;
-        gameManager.refreshDeskPlayersData();
+        var selfData = GamePlayDataMgr.getSelfPlayerData()
+        selfData.Status = GameDefine.PLAYER_READY.READY;
+        gameManager.refreshPlayer(selfData.PlayerIdx);
         this.refreBtnReady();
     },
 
     dissolvedRoom : function () {
         var content    = {}
-        content.roomID = GameDataMgr.getRoomInfo().RoomID;
+        content.roomID = GamePlayDataMgr.getRoomInfo().RoomID;
         NetMessageMgr.send(NetProtocolList.DissolveRoomMessageNum.netID, content);
     },
 
     exitOutRoom : function(){
         var content    = {}
-        content.roomID = GameDataMgr.getRoomInfo().RoomID;
+        content.roomID = GamePlayDataMgr.getRoomInfo().RoomID;
         NetMessageMgr.send(NetProtocolList.ExitRoomMessageNum.netID, content);
     },
 

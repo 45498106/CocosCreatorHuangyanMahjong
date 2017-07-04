@@ -43,7 +43,8 @@ cc.Class({
 
     //进入选择语言界面
     onBtnChooseLanguageClicked : function(){
-        Audio.playSound("_close.wav", false, 1);
+        UserLocalData.setSex("female");
+        Audio.playSound("zimo.mp3", false, 1);
         this.languageLayerNode.active = true;
         this.writeOffBtnNode.opacity = 150;
         this.checkLanguageEixt();
@@ -154,11 +155,11 @@ cc.Class({
             this.alertPrefabFunc(this.alertPrefab, "please_enter_verification_code");
         else if(verEditBox.string == this.verCode){
             if(this.isBindPhone == true){
-                this.alertPrefabFunc(this.toastPrefab, "success_bind_phone");
+                this.alertPrefabFunc(this.toastPrefab, "绑定成功");
                 bindLabel.string = this.phoneNum;
                 btnBindLabel.string = "解 绑";
             } else {
-                this.alertPrefabFunc(this.toastPrefab, "success_cancel_bind_phone");
+                this.alertPrefabFunc(this.toastPrefab, "取消绑定成功");
                 bindLabel.string = "未绑定手机";
                 btnBindLabel.string = "绑 定";
             }
@@ -212,7 +213,7 @@ cc.Class({
         if(prefab.name == "alertPrefab") {
             if (msg || cs) promptBox.getComponent("alertUI").getMessageFrom(msg, cs);
         } else if (prefab.name == "toastPrefab") {
-            if (msg || cs) promptBox.getComponent("toastPrefab").getMessageFrom(msg, cs);
+            if (msg || cs) promptBox.getComponent("toastPrefab").getMessageFrom(msg);
         }
     },
 

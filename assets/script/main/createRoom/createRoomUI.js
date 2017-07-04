@@ -1,5 +1,5 @@
 var NetMessageMgr   = require("NetMessageMgr");
-var GameDataMgr     = require("GameDataMgr");
+var GamePlayDataMgr     = require("GamePlayDataMgr");
 var GameDefine      = require("GameDefine");
 var NetProtocolList = require("NetProtocolList");
 var log             = require("utils").log;
@@ -81,10 +81,10 @@ cc.Class({
 
     creatGameRoomToServer : function(roomInfo){
         log("this  is roomInfo", roomInfo)
-        GameDataMgr.setRoomMaster(true);
-        GameDataMgr.setRoomInfo(roomInfo);
+        GamePlayDataMgr.setRoomMaster(true);
+        GamePlayDataMgr.setRoomInfo(roomInfo);
         var sendData = {
-            PlayerID : GameDataMgr.getUserID(),//玩家帐号
+            PlayerID : GamePlayDataMgr.getUserID(),//玩家帐号
             RoomInformation   : roomInfo,//房间信息
         }
         NetMessageMgr.send(NetProtocolList.CreateRoomMessageNum.netID, sendData);

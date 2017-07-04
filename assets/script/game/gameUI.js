@@ -26,6 +26,8 @@ cc.Class({
         alertPrefab       : cc.Prefab, //alert tips
         popWindowN        : cc.Node,
         readyLogiceN      : cc.Node,
+        voteUI            : cc.Node,
+        btnBack           : cc.Node,
     },
 
     // use this for initialization
@@ -36,7 +38,6 @@ cc.Class({
         this.caiShenN.active = false;
         this.shengPaiEffN    = this.overallEffN.getChildByName("shengPaiEff")
         this.reduceLabel     = this.lunpanN.getChildByName("residue").getComponent(cc.Label);
-        this.votingNode      = this.popWindowN.getChildByName("votingPop");
         this.outRoomSureN    = this.popWindowN.getChildByName("votingSure");
         this.initEatListPrefab();
     },
@@ -170,24 +171,30 @@ cc.Class({
         return directionN.getChildByName(curDirName);
     },
 
-    initVoting : function(){
-        this.votingNode.active = false;
-        var self = this;
-        this.votingNode.refreshData = function(data){
-
-        }
+    showVoting : function(data){
+        var voteUILogic = this.voteUI.getComponent("voteUI");
+        voteUILogic.setVoteData(data);
+        voteUILogic.showVoteNode();
     },
 
-    showVoting : function(data){
-        this.votingNode.active = true;
-        this.votingNode.refreshData(data);
+    hideVoting : function(){
+        var voteUILogic = this.voteUI.getComponent("voteUI");
+        voteUILogic.hideVoteNode();
+    },
+
+    setBtnBackVisi : function(visi){
+        this.btnBack.active = visi;
     },
 
     showReadyNode : function(){
         this.lunpanN.active = false;
         this.readyN.active  = true;
-        this.readyLogiceN.getComponent("readyUI").refreRoomData();
         this.readyN.setPosition(0, 0);
+        this.readyLogiceN.getComponent("readyUI").refreRoomData();
+    },
+
+    hideRoomOptBtn : function(){
+        this.readyLogiceN.getComponent("readyUI").hideRoomOptBtn();
     },
 
     //播放生牌阶段特效
@@ -231,22 +238,25 @@ cc.Class({
         gameManager.guoPaiToServer();
     },
 
-    hideMoreChiUI : function(eatData){
+    hideMoreChiUI : function(){
         this.eatMoreOptN.removeAllChildren();
         this.eatMoreOptN.active = false;
-        gameManager.chiPaiToServer(this.curChiObj, eatData);
     },
+
+    sendEatPaiToSerever : function(curChiObj, eatData){
+        gameManager.chiPaiToServer(curChiObj, eatData);
+    }, 
 
 
     //have more eat pai choice
     showMoreChiUI : function(eatobj, eatPaiData){
-        this.curChiObj = eatobj;
         this.eatMoreOptN.active = true;
         for(let i =0; i< eatPaiData.Data.length; i++){
             var paiGroupN = cc.instantiate(this.eatPaiDetailPrefab);
             this.eatMoreOptN.addChild(paiGroupN);
             paiGroupN.setPosition(cc.p(i * -220 - 100, 0))
-            paiGroupN.getComponent("eatDetailUI").init(this, eatPaiData.Data[i], eatPaiData.Atile);
+            paiGroupN.getComponent("eatDetailUI").init(this,
+                eatPaiData.Data[i], eatPaiData.Atile, eatobj);
         }
     },
 
@@ -254,6 +264,7 @@ cc.Class({
     onBtnChiChilcked : function(eatobj){
         this.hideEatPaiN();
         if(gameManager.eatPaiData.Data.length > 1){
+            gameManager.sortEatPaiData(gameManager.eatPaiData.Data);
             this.showMoreChiUI(eatobj, gameManager.eatPaiData);
         }else {
             gameManager.chiPaiToServer(eatobj, gameManager.eatPaiData.Data[0]);
@@ -331,7 +342,9 @@ cc.Class({
     },
 
     cleanEatUI : function(){
+        log("-------cleanEatUI" )
         this.hideEatPaiN();
+        this.hideMoreChiUI();
     },
 
     
@@ -354,6 +367,14 @@ cc.Class({
         this.popWindowN.addChild(alertNode, -1);
         alertNode.getComponent("alertUI").show(title, content, cb, cb);
         var end = this.popWindowN.getChildByName("endRound");
+    },
+
+    showVoteFaile : function(playername){
+        var content   = "玩家[ "+ playername  + " ]拒绝,解散房间失败";
+        var title     = ""
+        var alertNode = cc.instantiate(this.alertPrefab);
+        this.popWindowN.addChild(alertNode, -1);
+        alertNode.getComponent("alertUI").show(title, content);
     },
 
 });

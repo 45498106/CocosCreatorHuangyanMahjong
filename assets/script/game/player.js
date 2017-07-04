@@ -1,21 +1,27 @@
 var utils      = require("utils");
 var GameDefine = require("GameDefine");
+var GamePlayDataMgr     = require("GamePlayDataMgr");
 var gameManager = require("gameManager");
 var log = utils.log;
 
 var playerCls  = function () {
 
 }
+playerCls.prototype.setPlayerIDX = function(idxs){
+    this.PlayerIDX  = idxs;
+}
 
-playerCls.prototype.setUserData = function (playerData) {
-    this.playerData = playerData;
+playerCls.prototype.refreshData = function(){
+    var playerData = GamePlayDataMgr.getPlayerData(this.PlayerIDX);
     this.playerUI.refreshPlayerData(playerData);
-    this.setReadyData(playerData && playerData.Status === GameDefine.PLAYER_READY.READY);
+    this.refresReadyTag();
 }
 
 playerCls.prototype.setDirectNode = function(directionN, direction){
     this.directionN = directionN;
     this.direction  = direction;
+    //东是庄家
+    this.setIsZhuang(direction === GameDefine.DIRECTION_TYPE.DONG);
 }
 
 playerCls.prototype.setIsZhuang = function(isZhuang){
@@ -26,6 +32,14 @@ playerCls.prototype.setIsZhuang = function(isZhuang){
     }else {
         this.darkDirection();
     }
+}
+
+playerCls.prototype.isZhuangJia = function(){
+    return this.isZhuang;
+}
+
+playerCls.prototype.isXiaDesk = function(){
+    return this.desPosType === GameDefine.DESKPOS_TYPE.XIA;
 }
 
 playerCls.prototype.cleanPaiData = function(){
@@ -70,10 +84,9 @@ playerCls.prototype.init = function(playerUI, desPosType, gameUI){
     this.playerUI   = playerUI;
     this.desPosType = desPosType;
     this.playerUI.initDeskPosType(desPosType, gameUI, this);
-    if(this.desPosType === GameDefine.DESKPOS_TYPE.XIA){
+    if(this.isXiaDesk()){
         this.chuPai = this.selfChuPai;
     }
-    this.IsSelfPlayer = (this.desPosType === GameDefine.DESKPOS_TYPE.XIA);
     // this.testPos();
 }
 
@@ -155,9 +168,10 @@ playerCls.prototype.mopai = function(id){
 }
 
 
-playerCls.prototype.setReadyData = function(isReady) {
-    this.isReady = isReady;
-    this.playerUI.setIsReady(this.isReady);
+playerCls.prototype.refresReadyTag = function(isReady) {
+    var playerData = GamePlayDataMgr.getPlayerData(this.PlayerIDX);
+    var isReady = playerData && playerData.Status === GameDefine.PLAYER_READY.READY
+    this.playerUI.setIsReady(isReady);
 }
 
 
@@ -196,9 +210,6 @@ playerCls.prototype.daPaiAnimEnd = function(){
     this.checkPaiEnd();
 }
 
-// playerCls.prototype.isZhuangjia = function(){
-//     return gameManager.zhuangIndex === this.desPosType;
-// }
 
 //玩家打出去牌的最终结果
 playerCls.prototype.setPaiEnd = function(ChuPaiStatus){

@@ -31,7 +31,6 @@ cc.Class({
         this.gameUI          = gameUI;
         this.paiPrefab       = gameUI.paiPrefab;
         this.paiEffectPrefab = gameUI.eatEffectPrefab;
-        this.UIControl       = require("playerUIData").new(deskType);
         this.player          = player;
         
     },
@@ -71,15 +70,13 @@ cc.Class({
     	this.setStartPai();	
     },
     cleanPaiNode : function(){
-        log("--cleanPaiNode----", this)
         log(this.paiListNode);
         this.paiListNode.removeAllChildren();
     },
 
-    //设置拍得响应图案
     setStartPai : function(){
+        this.UIControl = require("playerUIData").new(this.deskType);
         this.refreShouPaiPos()
-        // this.refreCaiShenColor();
     },
 
     refreShouPaiPos : function(){
@@ -185,16 +182,6 @@ cc.Class({
         this.addEffect();
         this.animNode.getComponent("AnimHelper").playChi();
     },
-
-
-//     showPaiAim : function(eatType) {
-//         var animNode = cc.instantiate(this.paiEffectPrefab);
-//         animNode.setPosition(this.UIControl.eatTagPos);
-//         this.paiListNode.addChild(animNode, 999);
-//         animNode.scale = (this.deskType === GameDefine.DESKPOS_TYPE.XIA) ? 0.8 : 0.5;
-//        
-//     },
-
     
     refreGangPai : function(){
         var gangList = this.paiObjData.pengGangPai.gang;

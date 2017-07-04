@@ -1,6 +1,7 @@
 var utils      = require("utils");
 var GameDefine = require("GameDefine");
 var gameManager= require("gameManager");
+var GamePlayDataMgr = require("GamePlayDataMgr");
 var log        = utils.log;
 cc.Class({
     extends: cc.Component,
@@ -30,10 +31,10 @@ cc.Class({
     initDirectData : function(){
         var DirectType     = GameDefine.DIRECTION_TYPE;
         var directNodeName = {};
-        directNodeName[0]  = {nodeName :"dong", localText : "东风"};
-        directNodeName[1]  = {nodeName :"nan", localText : "南风"};
-        directNodeName[2]  = {nodeName :"xi", localText : "西风"};
-        directNodeName[3]  = {nodeName :"bei", localText : "北风"};
+        directNodeName[DirectType.DONG]  = {nodeName :"dong", localText : "东风"};
+        directNodeName[DirectType.NAN]  = {nodeName :"nan", localText : "南风"};
+        directNodeName[DirectType.XI]  = {nodeName :"xi", localText : "西风"};
+        directNodeName[DirectType.BEI]  = {nodeName :"bei", localText : "北风"};
         this.directNodeName             = directNodeName;
     },
 
@@ -73,19 +74,35 @@ cc.Class({
         }
     },
 
+    getDongIndex : function(){
+        var dongIndex = 0;
+        for(let pos =0;pos<4;pos++){
+            var destType  = GamePlayDataMgr.getDeskType(pos)
+            var direction = gameManager.playerList[destType].direction;
+            if(direction === GameDefine.DIRECTION_TYPE.DONG){
+                dongIndex = pos;
+                break;
+            }
+        }
+        return dongIndex;
+    },
+
     initSingleReport : function(){
         var self = this;
         this.singleRoundN.refreshData = function(data){
-            for(let i= 0; i < 4; i++){
-                let playerNode = self.singleRoundN.getChildByName("player_"+i);
-                let itemData   = data[i];
+            var dongIndex = self.getDongIndex();
+            for(let k = 0; k < 4; k++){
+                //start from dong feng;
+                var pos = (dongIndex + k)%4;
+                let playerNode = self.singleRoundN.getChildByName("player_"+k);
+                let itemData   = data[pos];
                 let paiListN   = playerNode.getChildByName("paiList");
                 let dirNode    = playerNode.getChildByName("direct");
-                self.setPlayerInfo(playerNode, i)
-                self.setDirectData(dirNode, i);
+                self.setPlayerInfo(playerNode, pos)
+                self.setDirectData(dirNode, pos);
                 self.setHuCountData(playerNode, itemData);
-                self.setPaiData(paiListN, itemData, i);
-                self.setPaiFengScore(playerNode, itemData, i); 
+                self.setPaiData(paiListN, itemData, pos);
+                self.setPaiFengScore(playerNode, data, pos); 
                 self.setFanAndHuCount(playerNode, itemData);
                 self.setReportTag(paiListN, itemData);
                 playerNode.getChildByName("byTips").active = itemData.isby;
@@ -102,13 +119,13 @@ cc.Class({
 
     //player base info, icon/name/direction
     setPlayerInfo : function(playerNode, pos){
-        var playerInfo = gameManager.getPlayerByDeskPos(pos)
+        var playerData = GamePlayDataMgr.getPlayerData(pos)
         let iconN = playerNode.getChildByName("icon");
-        iconN.getComponent(cc.Label).string = playerInfo.playerData.UserId;
+        iconN.getComponent(cc.Label).string = playerData.UserId;
         let nameN = playerNode.getChildByName("name");
-        nameN.getComponent(cc.Label).string = playerInfo.playerData.Name
-        playerNode.getChildByName("bg_1").active = !playerInfo.IsSelfPlayer;
-        playerNode.getChildByName("bg_2").active = playerInfo.IsSelfPlayer;
+        nameN.getComponent(cc.Label).string = playerData.Name
+        playerNode.getChildByName("bg_1").active = !playerData.isSelfPlayed;
+        playerNode.getChildByName("bg_2").active = playerData.isSelfPlayed;
         
     },
 
@@ -145,8 +162,8 @@ cc.Class({
     setFanAndHuCount(playerNode, data){
         var fanNode = playerNode.getChildByName("fanCount");
         var huNode  = playerNode.getChildByName("huCount");
-        var fanData = ""
-        var huData  = "" 
+        var fanData = "";
+        var huData  = "";
         for(let k in data.hsxq){
             if(GameDefine.FSTEXT[k]){
                 fanData += (GameDefine.FSTEXT[k] +"+"+data.hsxq[k] + " ");
@@ -155,6 +172,7 @@ cc.Class({
                 huData += (GameDefine.HSTEXT[k] +"+"+data.hsxq[k]+ " ");
             }
         }
+        huData = huData.length < 1 ? "0" + huData : huData;
         if(fanData.length > 0){
             fanNode.getComponent(cc.Label).string = "翻数: " + fanData;
             huNode.getComponent(cc.Label).string  = "胡数: " + huData;
@@ -178,7 +196,9 @@ cc.Class({
     },
 
     //set current player direction data
-    setDirectData : function(dirNode, direction){
+    setDirectData : function(dirNode, pos){
+        var destType  = GamePlayDataMgr.getDeskType(pos)
+        var direction = gameManager.playerList[destType].direction;
         //hide all node
         for(let i = 0; i < dirNode.children.length; i++){
             dirNode.children[i].active = false;
@@ -188,10 +208,13 @@ cc.Class({
     },
     //set current player pai data
     setPaiData : function(paiListNode, data, pos) {
-        var player = gameManager.getPlayerByDeskPos(pos)
+        var destType = GamePlayDataMgr.getDeskType(pos);
+        var player   = gameManager.playerList[destType];
         var pengGangPai = player.paiDataObj.pengGangPai;
         var shouPai     = data.sp;
-        shouPai.sort();
+        if(shouPai){
+            shouPai.sort();
+        }
         //every player's pai display as like xia player  
         var destType    = GameDefine.DESKPOS_TYPE.XIA;
         var gangPaiList = pengGangPai.gang;
@@ -261,6 +284,7 @@ cc.Class({
 
     //和其他风玩家的分数
     setPaiFengScore : function(playerNode, data, pIndex){
+        var itemData = data[pIndex];
         var addColor    = new cc.Color(255, 255, 0);
         var reduceColor = new cc.Color(100, 255, 237);
         var playerFengData = [];
@@ -268,16 +292,19 @@ cc.Class({
             if(i === pIndex){
                 continue;
             }
-            let score = data.pxdhs[i];
-            score = score || 0;
-            playerFengData.push({sp: score, index : i})
+            let score         = itemData.pxdhs[i];
+            score             = score || 0;
+            var otherDeskType = GamePlayDataMgr.getDeskType(i);
+            var direction     = gameManager.playerList[otherDeskType].direction;
+            var fengName      = this.directNodeName[direction].localText;
+            playerFengData.push({sp: score, name : fengName})
         }
         for(i=0; i<3;i++){
             let fengNode = playerNode.getChildByName("feng_"+i);
             let nameNode = fengNode.getChildByName("name");
             let scoreNode= fengNode.getChildByName("content");
             var fengData = playerFengData[i];
-            nameNode.getComponent(cc.Label).string  = this.directNodeName[fengData.index].localText;
+            nameNode.getComponent(cc.Label).string  = fengData.name;
             scoreNode.getComponent(cc.Label).string = (fengData.sp > 0 ? "+" : "") + fengData.sp;
             scoreNode.color = (fengData.sp > 0 > 0) ? addColor : reduceColor
         }
@@ -338,6 +365,7 @@ cc.Class({
         gameManager.cleanData();
         gameManager.cleanPlayerPaiData();
         this.gameUI.showReadyNode();
+        this.gameUI.hideRoomOptBtn();
         this.endRoundN.active    = false;
         this.singleRoundN.active = false;
         this.totalRoundN.active  = false;

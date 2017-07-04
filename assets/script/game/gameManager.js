@@ -3,7 +3,7 @@ var GameDefine      = require("GameDefine");
 var utils           = require("utils");
 var NetMessageMgr   = require("NetMessageMgr");
 var NetProtocolList = require("NetProtocolList");
-var GameDataMgr     = require("GameDataMgr");
+var GamePlayDataMgr = require("GamePlayDataMgr");
 var log             = utils.log;
 var GameManager     = {};
 
@@ -12,11 +12,12 @@ GameManager.initGame = function(playerList, gameUICB){
 	this.playerList = playerList;
 	this.gameUICB   = gameUICB;
 	this.init();
+	this.setBtnBackVisi();
 }
 
 GameManager.init = function(){
 	this.initDirectionNodeList();
-	this.refreshDeskPlayersData(); 
+	this.initPlayerData(); 
 	this.cleanData();
 	var mmgr    = NetMessageMgr;
 	var netList = NetProtocolList;
@@ -48,12 +49,12 @@ GameManager.init = function(){
 	mmgr.addMessageCB(netList.MoPaiZuHeReminderNum.netID, this.MoPaiZuHeReminder, this);
 	mmgr.addMessageCB(netList.RestoreListenReminderNum.netID, this.RestoreListenReminder, this);
 	mmgr.addMessageCB(netList.VotingReminderNum.netID, this.VotingReminder, this);
+	mmgr.addMessageCB(netList.VotingRstNoticeNum.netID, this.VotingRstNotice, this);
 }
 
 GameManager.onDestroy  = function(){
 	this.cleanData();
-	this.doDestoryCB();
-	GameDataMgr.cleanGameData();
+	GamePlayDataMgr.cleanGameData();
 	var mmgr    = NetMessageMgr;
 	var netList = NetProtocolList;
 	mmgr.rmMessageCB(netList.EnterRoomNoticeNum.netID,this.onUserEnterRoom);
@@ -84,27 +85,32 @@ GameManager.onDestroy  = function(){
 	mmgr.rmMessageCB(netList.MoPaiZuHeReminderNum.netID, this.MoPaiZuHeReminder);
 	mmgr.rmMessageCB(netList.RestoreListenReminderNum.netID, this.RestoreListenReminder);
 	mmgr.rmMessageCB(netList.VotingReminderNum.netID, this.VotingReminder);
+	mmgr.rmMessageCB(netList.VotingRstNoticeNum.netID, this.VotingRstNotice)
 }
 
 //新一轮
 GameManager.newRound = function(paiData){
 	this.isRoundIsOver = false;
+	this.isPlaying     = true;
 	this.totalReduce   = 0;
  	this.bindUserDirection();
 	this.setStartPaiData();
 	this.gameUICB.gameStart();  
-    this.hideAllReadyNode();
+    this.hideAllReadyData();
     this.liujupaiCount = utils.getChannelInfo().zhuangPaiCount;
+    this.setBtnBackVisi();
 }
 
 GameManager.cleanData = function(){
-	this.startPaiData  = undefined;
-	this.meDirection   = undefined;
-	this.CaiShenPai    = undefined;
-	this.DeskPosIdxs   = undefined;
-	this.curChuPaiUdid = undefined;
-	this.lastChuPaiDir = undefined;
+	this.startPaiData     = undefined;
+	this.meDirection      = undefined;
+	this.CaiShenPai       = undefined;
+	this.DeskPosIdxs      = undefined;
+	this.curChuPaiUdid    = undefined;
+	this.lastChuPaiDir    = undefined;
 	this.rounAnimFinished = undefined;
+	this.isPlaying        = undefined;
+	this.isXiaDesk        = undefined;
 }
 
 GameManager.cleanPlayerPaiData = function(){
@@ -112,20 +118,7 @@ GameManager.cleanPlayerPaiData = function(){
 		let player = this.playerList[k];
 		player.cleanPaiData();
 	}
-}
-
-
-GameManager.addDestoryCB = function(cb, env){
-	this.DestoryCBList = this.DestoryCBList || [];
-	this.DestoryCBList.push({cb:cb, env:env});
-}
-
-GameManager.doDestoryCB = function(){
-	for(let i = 0; i< this.DestoryCBList.length; i++){
-		let cbObj = this.DestoryCBList[i];
-		cbObj.cb.call(cbObj.env);
-	}
-	this.DestoryCBList = undefined;
+	this.isPlaying = false;
 }
 
 
@@ -173,35 +166,45 @@ GameManager.initDirectionNodeList = function(){
 }
 
 //设置座位上的玩家数据
-GameManager.refreshDeskPlayersData = function () {
-	var roomPlayers =  GameDataMgr.getRoomPlayers();
+GameManager.initPlayerData = function () {
+	var roomPlayers =  GamePlayDataMgr.getRoomPlayers();
 	for(let destPos =0; destPos <4; destPos++){
-		var playerInfo = roomPlayers[destPos];
-		this.setPlayerData(playerInfo, destPos);
+		var deskType   = GamePlayDataMgr.getDeskType(destPos);
+		var player     = this.playerList[deskType];
+		player.setPlayerIDX(destPos);
+		player.refreshData();
 	}
 }
 
-//给玩家设置数据
-GameManager.setPlayerData = function (playerInfo, pos) {
-	var deskType = this.getDeskTypeByPos(pos)
-	var player   = this.playerList[deskType];
-	player.setUserData(playerInfo);
+GameManager.refreshPlayer = function(destPos){
+	var deskType   = GamePlayDataMgr.getDeskType(destPos);
+	var player     = this.playerList[deskType];
+	player.refreshData();
 }
 
-//获取玩家在本地显示的方位
-//PlayerIdx 座位索引 数据为 0 1 2 3
-GameManager.getDeskTypeByPos = function(PlayerIdx){
-	return GameDataMgr.getDeskPosIdxs()[PlayerIdx]
+GameManager.refreshPlayerReady = function(destPos){
+	var deskType   = GamePlayDataMgr.getDeskType(destPos);
+	var player     = this.playerList[deskType];
+	player.refresReadyTag();
+}
+
+GameManager.sortEatPaiData = function(eatData){
+	for(let i =0; i<eatData.length; i++){
+		eatData[i].sort();
+	}
+	eatData.sort(function(a, b){
+		return b[0] - a[0];
+	})
+	return eatData;
 }
 
 
 // /* ---------------- Start Net Message --------------------------*/
 //当玩家进入房间
 GameManager.onUserEnterRoom = function(data){
-	var playerInfo  = data.PlayerInformation;
-	var roomPlayers =  GameDataMgr.getRoomPlayers();
-	roomPlayers[playerInfo.PlayerIdx] = playerInfo;
-	this.setPlayerData(playerInfo, playerInfo.PlayerIdx);
+	var playerInfo = data.PlayerInformation;
+	GamePlayDataMgr.setPlayerData(playerInfo, playerInfo.PlayerIdx);
+	this.refreshPlayer(playerInfo.PlayerIdx);
 }
 
 //解散房间
@@ -215,16 +218,15 @@ GameManager.DissolveRoomNotice = function(){
 
 //退出房间通知
 GameManager.exitRoomNotice = function (data) {
-	var roomPlayers = GameDataMgr.getRoomPlayers();
-	roomPlayers[data.PlayerIdx] = undefined;
-	this.setPlayerData(undefined, data.PlayerIdx);
+	var PlayerIdx = data.PlayerIdx;
+	GamePlayDataMgr.setPlayerData(undefined, PlayerIdx);
+	this.refreshPlayer(PlayerIdx);
 }
 
 GameManager.prepareNoticeMessage = function (data) {
-	var roomPlayers = GameDataMgr.getRoomPlayers();
-	var deskType    = this.getDeskTypeByPos(data.PlayerIdx);
-	var player      = this.playerList[deskType];
-	player.setReadyData(true);
+	var playerData    = GamePlayDataMgr.getPlayerData(data.PlayerIdx); 
+	playerData.Status = GameDefine.PLAYER_READY.READY;
+	this.refreshPlayerReady(data.PlayerIdx);
 }
 
 
@@ -235,10 +237,12 @@ GameManager.startFaPai = function(paiData) {
 }
 
 //隐藏所有的
-GameManager.hideAllReadyNode = function(){
-	for(let k in this.playerList){
-		let player = this.playerList[k]
-		player.setReadyData(false);
+GameManager.hideAllReadyData = function(){
+	let roomPlayers = GamePlayDataMgr.getRoomPlayers();
+	for(let k in roomPlayers){
+		var playerData = roomPlayers[k];
+		playerData.Status = GameDefine.PLAYER_READY.NO_READY;
+		this.refreshPlayerReady(k);
 	}
 
 }
@@ -266,13 +270,11 @@ GameManager.setStartPaiData = function(){
 	var fapaiCount = 0;
 	var DefineDesk = GameDefine.DESKPOS_TYPE;
 	for(var i = 0; i < 4; i++){
-		var dType    = this.getDeskTypeByPos(i);
+		var dType    = GamePlayDataMgr.getDeskType(i);
 		var paiCount = totalList[i];
 		fapaiCount   += paiCount;
-		var isZhuang = utils.getChannelInfo().zhuangPaiCount === paiCount;
 		var player   = this.playerList[dType];
-		player.setIsZhuang(isZhuang);
-		if(isZhuang) {
+		if(player.isZhuangJia()) {
 			this.curPlayer = player;
 		}
 		if(dType !== DefineDesk.XIA){			
@@ -301,7 +303,7 @@ GameManager.addLiujuCount = function(){
 GameManager.MoPaiNotice = function(data){
 	this.refreResidue(1);
 	this.ChuPaiStatus = GameDefine.CHUPAI_STATUS.NEW;
-	var deskType = this.getDeskTypeByPos(data.PlayerIdx)
+	var deskType = GamePlayDataMgr.getDeskType(data.PlayerIdx)
 	//netID 102 没有推送PlayerIdx数据过来 102是自己摸牌
 	if(deskType === undefined){
 		deskType = GameDefine.DESKPOS_TYPE.XIA; 
@@ -352,7 +354,7 @@ GameManager.ShengPaiNotice = function(data){
 
 //出牌提示
 GameManager.ChuPaiNotice = function(data){
-	var deskType = this.getDeskTypeByPos(data.PlayerIdx);
+	var deskType = GamePlayDataMgr.getDeskType(data.PlayerIdx);
 	this.lastChuPaiDir = deskType;
 	var player   = this.playerList[deskType];
 	player.chuPai(data.Atile, this.curChuPaiUdid);
@@ -414,7 +416,24 @@ GameManager.playerWantToOut = function(){
 
 //show votiing window
 GameManager.VotingReminder = function(data){
-	this.gameUICB.showVoting()
+	var playersInfo   = {};
+	var votePlayerIdx = 0;
+	var votePlayer    = {};
+	var roomPlayers = GamePlayDataMgr.getRoomPlayers();
+	for(let idx in roomPlayers){
+		log("---idx" + idx)
+		var player = roomPlayers[idx];
+		log("--player", player)
+		if(idx != data.PlayerIdx){
+			playersInfo[idx] = {};
+			playersInfo[idx].name = player.name;
+			playersInfo[idx].voteStatus = GameDefine.VOTESTATUS.NOVOTE;
+			playersInfo[idx].id = player.UserId;
+		}
+	}
+	data.playersInfo = playersInfo;
+	data.votePlayer  = votePlayer;
+	this.gameUICB.showVoting(data)
 }
 
 
@@ -475,7 +494,7 @@ GameManager.PengPaiAckMessage = function(data){
 //某人碰||杠||胡||吃牌了
 GameManager.ChuPaiZuHeNotice = function(data){
 	var eatType = this.getEatTypeList(data.Opts)[0];
-	var deskType = this.getDeskTypeByPos(data.PlayerIdx);
+	var deskType = GamePlayDataMgr.getDeskType(data.PlayerIdx);
 	var player   = this.playerList[deskType];
 	this.ChuPaiStatus = GameDefine.CHUPAI_STATUS.EATED;
 	this.turnToNextPlayer(player);
@@ -545,6 +564,13 @@ GameManager.turnToNextPlayer = function(player){
 	this.curPlayer.checkPaiEnd()
 	this.curPlayer = player;
 	this.curPlayer.lightDirection();
+	this.isXiaDesk = this.curPlayer.isXiaDesk();
+	this.setBtnBackVisi();
+}
+
+GameManager.setBtnBackVisi = function(){
+	var isVisi = this.isPlaying && this.isXiaDesk;
+	this.gameUICB.setBtnBackVisi(isVisi);
 }
 
 //抢杠提示
@@ -581,9 +607,19 @@ GameManager.TotalZhanJiNotice = function(data){
 	this.gameUICB.setTotalReport(data);
 }
 
-GameManager.getPlayerByDeskPos = function(pos){
-	var deskType = this.getDeskTypeByPos(pos);
-	return this.playerList[deskType];
+GameManager.VotingRstNotice = function(data){
+	this.gameUICB.hideVoting();
+	if(data.VotingRst){
+		var self = this;
+		var cb = function(){
+			self.exiteRoom();
+		}
+		this.gameUICB.showDissolved(cb)
+	}else {
+		var player = GamePlayDataMgr.getPlayerData(data.PlayerRefused);
+		this.gameUICB.showVoteFaile(player.Name);
+	}
+
 }
 
 

@@ -8,19 +8,14 @@ cc.Class({
     },
 
     // use this for initialization
-    getMessageFrom: function (msg, cs) {
-        this.msg = msg;
-        this.cs = cs;
-        this.updateContent();
+    getMessageFrom: function (msg) {
+        this.updateContent(msg);
         this.removeNode();
     },
 
-    updateContent : function(){
+    updateContent : function(msg){
         var content = this.contentNode.getComponent(cc.Label);
-        if(this.msg == "success_bind_phone")
-            content.string = "绑定成功"
-        if(this.msg == "success_cancel_bind_phone")
-            content.string = "取消绑定成功";
+        content.string = msg;
 
         //设置背景的宽度跟随文字长度变化
         var backHeight = this.backNode.getContentSize().height

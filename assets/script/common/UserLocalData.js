@@ -5,6 +5,7 @@ var userLocalData = {
 	soundSwitch : true,  		// 1-开, 0-关
 	musicSwitch : true,  		// 1-开, 0-关
 	language	: "mandarin",   // mandarin-普通话(默认)
+	sex 		: "male",       // 性别 默认男-male 女-female
 };
 
 module.exports = {
@@ -58,11 +59,20 @@ module.exports = {
 	//设置语音类型
 	setAudioKind : function(kind){
 		userLocalData.language = kind;
-		this.setLocalData(userLocalData.language);
+		this.setLocalData(userLocalData.userID);
 	},
 
 	getAudioKind : function(){
 		return userLocalData.language;
 	},
+
+	setSex : function(sex){
+		userLocalData.sex = sex;
+		this.setLocalData(userLocalData.userID);
+	},
+
+	getSex : function(){
+		return userLocalData.sex;
+	}
 
 };
